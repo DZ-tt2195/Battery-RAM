@@ -18,6 +18,11 @@ public class EventCard : Card
         GetInstructions(dataFile);
     }
 
+    public override CardData GetFile()
+    {
+        return dataFile;
+    }
+
     public virtual void ActivateThis(int logged)
     {
         foreach (Player player in Manager.instance.playersInOrder)

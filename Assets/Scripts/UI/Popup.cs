@@ -75,6 +75,8 @@ public class Popup : MonoBehaviour
     internal int AddCardButton(Card card, float alpha)
     {
         Button nextButton = Instantiate(cardButton, this.transform.GetChild(1));
+        nextButton.GetComponent<RightClickMe>().AssignInfo(card.cg, card.GetFile().artCredit);
+
         nextButton.name = card.name;
         nextButton.interactable = true;
         int buttonNumber = buttonsInCollector.Count;

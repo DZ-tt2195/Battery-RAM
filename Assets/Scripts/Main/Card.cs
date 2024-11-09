@@ -16,6 +16,7 @@ public class Card : PhotonCompatible
     public Button button { get; private set; }
     public Image border { get; private set; }
     public CanvasGroup cg { get; private set; }
+    protected RightClickMe rcm;
 
     protected Image background;
     protected Image artBox;
@@ -37,6 +38,7 @@ public class Card : PhotonCompatible
 
         border = this.transform.Find("Border").GetComponent<Image>();
         button = GetComponent<Button>();
+        rcm = GetComponent<RightClickMe>();
         cg = this.transform.Find("Canvas Group").GetComponent<CanvasGroup>();
         this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.instance.canvas.transform.localScale, 0.5f);
 
@@ -58,6 +60,7 @@ public class Card : PhotonCompatible
 
     protected void GetInstructions(CardData dataFile)
     {
+        rcm.AssignInfo(cg, dataFile.artCredit);
         if (dataFile.useSheets)
         {
             activationSteps = SpliceString(dataFile.playInstructions);
@@ -80,6 +83,11 @@ public class Card : PhotonCompatible
                 return divide.Split('/').ToList();
             }
         }
+    }
+
+    public virtual CardData GetFile()
+    {
+        return null;
     }
 
     #endregion

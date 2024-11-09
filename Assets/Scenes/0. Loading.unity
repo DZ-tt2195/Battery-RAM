@@ -776,8 +776,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 8478697304549135352, guid: 8552ffe2815504ba6bdbebb2664acac5, type: 3}
-  playerCardPrefab: {fileID: 0}
-  otherCardPrefab: {fileID: 0}
+  playerCardPrefab: {fileID: 1761235060413094877, guid: d50eb448d0731474ebebdd3627d1ec5a, type: 3}
+  otherCardPrefab: {fileID: 1761235060413094877, guid: b9655c1c3c36e43ac8d68cd96d67ea2f, type: 3}
   textPopup: {fileID: 7594585533340515175, guid: 0ce383b7ea8ca488c810cadf3b089e7e, type: 3}
   cardPopup: {fileID: 3183939439193871304, guid: 293c9a8a887c64616a8e499c379c4cd7, type: 3}
   sliderPopup: {fileID: 291359092802989284, guid: 4e3e6bcfdb9d04bfaa9f8da769627677, type: 3}
@@ -1679,6 +1679,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1271499794}
   - component: {fileID: 1271499795}
+  - component: {fileID: 1271499796}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -1713,6 +1714,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20ae53735d7864219a2a86d041248ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1271499796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1271499792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2db6c0ce187e46ffb586818755f50a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numCards: 4
+  numCoins: 4
+  targetCrown: 20
 --- !u!1 &1327296366
 GameObject:
   m_ObjectHideFlags: 0

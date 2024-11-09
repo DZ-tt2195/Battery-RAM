@@ -110,7 +110,7 @@ public class Player : PhotonCompatible
 
         resourceDictionary = new()
         {
-            { Resource.Coin, 0 },
+            { Resource.Coin, 4 },
             { Resource.Crown, 0 },
         };
 
@@ -199,7 +199,7 @@ public class Player : PhotonCompatible
     {
         int answer = resourceDictionary[Resource.Crown];
         foreach (PlayerCard card in cardsInPlay)
-            answer += card.dataFile.scoringCrowns;
+            answer += (card.GetFile() as PlayerCardData).scoringCrowns;
         return answer;
     }
 
@@ -355,14 +355,20 @@ public class Player : PhotonCompatible
     public void PlayCard(PlayerCard card, bool pay, int logged)
     {
         if (card == null)
+        {
             return;
+        }
+
+        PlayerCardData data = card.GetFile() as PlayerCardData;
 
         if (pay)
         {
-            int coinCost = card.dataFile.coinCost + this.NumberFromAbilities(nameof(ChangeCoinCost), ChangeCoinCost.CheckParameters(card), logged);
-            this.ResourceRPC(Resource.Coin, -1 * coinCost, logged);
+            int coinCost = data.coinCost + this.NumberFromAbilities(nameof(ChangeCoinCost), ChangeCoinCost.CheckParameters(card), logged);
+            if (coinCost > 0)
+                this.ResourceRPC(Resource.Coin, -1 * coinCost, logged);
         }
         RememberStep(this, StepType.Share, () => AddToPlay(false, card.pv.ViewID, logged));
+        card.BatteryRPC(this, data.startingBatteries, -1);
     }
 
     [PunRPC]

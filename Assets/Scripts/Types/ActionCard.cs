@@ -18,6 +18,11 @@ public class ActionCard : Card
         GetInstructions(dataFile);
     }
 
+    public override CardData GetFile()
+    {
+        return dataFile;
+    }
+
     public virtual void ActivateThis(Player player, int logged)
     {
         stepCounter = -1;

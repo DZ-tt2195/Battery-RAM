@@ -135,10 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textbox: {fileID: 941630887043118279}
   textButton: {fileID: 2023335336927519802, guid: 2da18fd0a62e74b21b62a7b82a5d6619, type: 3}
-  cardButton: {fileID: 4262155189593706374, guid: af0bde25e4f46421ab50a6fae6536fca, type: 3}
-  buttonsInCollector: []
-  buyablesInCollector: []
-  decidingPlayer: {fileID: 0}
+  cardButton: {fileID: 7028507305671673672, guid: f19e2d40b7c2e408c9e11fda702acf51, type: 3}
 --- !u!1 &3199112578553677195
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,12 +4,12 @@ using TMPro;
 using UnityEngine.UI;
 using Photon.Pun;
 
-public class PlayerCard : Card, IPointerClickHandler
+public class PlayerCard : Card
 {
 
 #region Setup
 
-    public PlayerCardData dataFile { get; protected set; }
+    PlayerCardData dataFile;
     TMP_Text cardStats;
     TMP_Text batteryText;
     public int batteriesHere { get; private set; }
@@ -22,14 +22,6 @@ public class PlayerCard : Card, IPointerClickHandler
         batteryText = this.transform.Find("Battery Image").GetComponentInChildren<TMP_Text>();
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            CarryVariables.instance.RightClickDisplay(cg, dataFile.artCredit.Replace("/", "\n"));
-        }
-    }
-
     internal override void AssignInfo(int fileNumber)
     {
         dataFile = CarryVariables.instance.playerCardFiles[fileNumber];
@@ -39,6 +31,11 @@ public class PlayerCard : Card, IPointerClickHandler
         cardName.text = KeywordTooltip.instance.EditText($"{dataFile.name}     {dataFile.coinCost} Coin");
         cardStats.text = KeywordTooltip.instance.EditText($"{dataFile.startingBatteries} Battery | {dataFile.scoringCrowns} Crown");
         cardDescription.text = KeywordTooltip.instance.EditText(dataFile.textBox);
+    }
+
+    public override CardData GetFile()
+    {
+        return dataFile;
     }
 
     public virtual void ActivateThis(Player player, int logged)
