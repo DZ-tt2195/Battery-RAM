@@ -24,14 +24,17 @@ public class Manager : PhotonCompatible
     [Foldout("Gameplay", true)]
     List<Action> actionStack = new();
     int currentStep = -1;
-    List<Action> damageStack = new();
-    List<TriggeredAbility> allAbilities = new();
+    int waitingOnPlayers = 0;
+    int turnNumber;
+    EventCard nextEvent;
+    Popup eventPopup;
 
     [Foldout("Cards", true)]
     public Transform playerDeck;
     public Transform playerDiscard;
     public Transform eventDeck;
     public Transform eventDiscard;
+    public List<ActionCard> listOfActions = new();
 
     [Foldout("UI and Animation", true)]
     [SerializeField] TMP_Text instructions;
@@ -94,6 +97,11 @@ public class Manager : PhotonCompatible
             {
                 GameObject next = MakeObject(CarryVariables.instance.otherCardPrefab);
                 DoFunction(() => AddEventCard(next.GetComponent<PhotonView>().ViewID, i), RpcTarget.AllBuffered);
+            }
+            for (int i = 0; i < CarryVariables.instance.actionFiles.Count; i++)
+            {
+                GameObject next = MakeObject(CarryVariables.instance.otherCardPrefab);
+                DoFunction(() => AddActionCard(next.GetComponent<PhotonView>().ViewID, i), RpcTarget.AllBuffered);
             }
         }
 
@@ -171,6 +179,24 @@ public class Manager : PhotonCompatible
     }
 
     [PunRPC]
+    void AddActionCard(int ID, int fileNumber)
+    {
+        GameObject nextObject = PhotonView.Find(ID).gameObject;
+        CardData data = CarryVariables.instance.actionFiles[fileNumber];
+        nextObject.name = data.name;
+
+        Type type = Type.GetType(data.name.Replace(" ", ""));
+        if (type != null)
+            nextObject.AddComponent(type);
+        else
+            nextObject.AddComponent(Type.GetType(nameof(ActionCard)));
+
+        ActionCard card = nextObject.GetComponent<ActionCard>();
+        card.AssignInfo(fileNumber);
+        listOfActions.Add(card);
+    }
+
+    [PunRPC]
     void AddPlayerCard(int ID, int fileNumber)
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
@@ -178,7 +204,6 @@ public class Manager : PhotonCompatible
 
         nextObject.name = data.name;
         nextObject.transform.SetParent(playerDeck);
-
         nextObject.transform.localPosition = new(250 * playerDeck.childCount, 10000);
 
         Type type = Type.GetType(data.name.Replace(" ", ""));
@@ -225,12 +250,78 @@ public class Manager : PhotonCompatible
     {
         if (currentStep < actionStack.Count - 1)
         {
-            foreach (Action action in damageStack)
-                action();
-            damageStack.Clear();
-
             currentStep++;
             actionStack[currentStep]();
+        }
+        else
+        {
+            foreach (Player player in playersInOrder)
+            {
+                AddStep(() => OneEvent(player));
+                AddStep(ResolveEvent);
+                AddStep(EveryoneTurn);
+            }
+            NextAction();
+        }
+
+        void OneEvent(Player player)
+        {
+            turnNumber++;
+            Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber}", 0));
+
+            waitingOnPlayers = 1;
+            player.DoFunction(() => player.StartChooseEvent(), player.realTimePlayer);
+        }
+
+        void ResolveEvent()
+        {
+            waitingOnPlayers = playersInOrder.Count;
+            DoFunction(() => CreateEventPopup(nextEvent.pv.ViewID));
+            nextEvent.ActivateThis(0);
+        }
+
+        void EveryoneTurn()
+        {
+            waitingOnPlayers = playersInOrder.Count;
+            foreach (Player player in playersInOrder)
+                player.DoFunction(() => player.StartMainTurn(), player.realTimePlayer);
+        }
+    }
+
+    [PunRPC]
+    internal void NewEvent(int PV)
+    {
+        nextEvent = PhotonView.Find(PV).GetComponent<EventCard>();
+    }
+
+    [PunRPC]
+    void CreateEventPopup(int PV)
+    {
+        nextEvent = PhotonView.Find(PV).GetComponent<EventCard>();
+        eventPopup.gameObject.SetActive(true);
+
+        eventPopup.RemoveButton(0);
+        eventPopup.AddCardButton(nextEvent, 1);
+        eventPopup.DisableButton(0);
+    }
+
+    [PunRPC]
+    internal void CompletedTurn()
+    {
+        if (!PhotonNetwork.IsConnected)
+        {
+            Continue();
+        }
+        else
+        {
+            waitingOnPlayers--;
+            if (waitingOnPlayers == 0)
+            {
+                foreach (Player player in playersInOrder)
+                    player.pv.RPC(nameof(player.ShareSteps), player.realTimePlayer);
+                Continue();
+            }
         }
     }
 
@@ -245,11 +336,10 @@ public class Manager : PhotonCompatible
         foreach (Popup popup in allPopups)
             Destroy(popup.gameObject);
 
-        /*
+
         List<Player> playerScoresInOrder = playersInOrder.OrderByDescending(player => player.CalculateScore()).ToList();
         int nextPlacement = 1;
-        scoreText.text += $"Game length: {CalculateTime()}\n";
-        */
+
         Log.instance.AddText("");
         Log.instance.AddText("The game has ended.");
         Instructions("The game has ended.");
@@ -260,7 +350,7 @@ public class Manager : PhotonCompatible
             resignPlayer = playersInOrder[resignPosition];
             Log.instance.AddText($"{resignPlayer.name} has resigned.");
         }
-        /*
+
         for (int i = 0; i < playerScoresInOrder.Count; i++)
         {
             Player player = playerScoresInOrder[i];
@@ -271,7 +361,7 @@ public class Manager : PhotonCompatible
                     nextPlacement++;
             }
         }
-        */
+
         if (resignPlayer != null)
             EndstatePlayer(resignPlayer, true);
         scoreText.text = KeywordTooltip.instance.EditText(scoreText.text);
@@ -282,14 +372,7 @@ public class Manager : PhotonCompatible
 
     void EndstatePlayer(Player player, bool resigned)
     {
-        //scoreText.text += $"\n\n{player.name} - {player.CalculateScore()} VP {(resigned ? $"[Resigned on turn {turnNumber}]" : "")}\n";
-    }
-
-    string CalculateTime(Stopwatch stopwatch)
-    {
-        TimeSpan time = stopwatch.Elapsed;
-        string part = time.Seconds < 10 ? $"0{time.Seconds}" : $"{time.Seconds}";
-        return $"{time.Minutes}:{part}";
+        scoreText.text += $"\n\n{player.name} - {player.CalculateScore()} VP {(resigned ? $"[Resigned]" : "")}\n";
     }
 
     void Leave()

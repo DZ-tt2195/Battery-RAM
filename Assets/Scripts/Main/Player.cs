@@ -350,6 +350,200 @@ public class Player : PhotonCompatible
 
     #endregion
 
+#region Cards In Play
+
+    public void PlayCard(PlayerCard card, bool pay, int logged)
+    {
+        if (card == null)
+            return;
+
+        if (pay)
+        {
+            int coinCost = card.dataFile.coinCost + this.NumberFromAbilities(nameof(ChangeCoinCost), ChangeCoinCost.CheckParameters(card), logged);
+            this.ResourceRPC(Resource.Coin, -1 * coinCost, logged);
+        }
+        RememberStep(this, StepType.Share, () => AddToPlay(false, card.pv.ViewID, logged));
+    }
+
+    [PunRPC]
+    void AddToPlay(bool undo, int PV, int logged)
+    {
+        PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
+        if (undo)
+        {
+            card.cg.alpha = 0;
+            cardsInHand.Add(card);
+            cardsInPlay.Remove(card);
+        }
+        else
+        {
+            cardsInHand.Remove(card);
+            cardsInPlay.Add(card);
+
+            Log.instance.AddText($"{this.name} plays {card.name}.", logged);
+            card.cg.alpha = 1;
+        }
+        SortHand();
+        SortPlay();
+    }
+
+    public void SortPlay()
+    {
+        float start = -1100;
+        float end = 475;
+        float gap = 225;
+
+        float midPoint = (start + end) / 2;
+        int maxFit = (int)((Mathf.Abs(start) + Mathf.Abs(end)) / gap);
+
+        for (int i = 0; i < cardsInHand.Count; i++)
+        {
+            Card nextCard = cardsInHand[i];
+
+            nextCard.transform.SetParent(keepHand);
+            nextCard.transform.SetSiblingIndex(i);
+
+            float offByOne = cardsInHand.Count - 1;
+            float startingX = (cardsInHand.Count <= maxFit) ? midPoint - (gap * (offByOne / 2f)) : (start);
+            float difference = (cardsInHand.Count <= maxFit) ? gap : gap * (maxFit / offByOne);
+
+            Vector2 newPosition = new(startingX + difference * i, 0);
+            StartCoroutine(nextCard.MoveCard(newPosition, 0.25f, Vector3.one));
+            StartCoroutine(nextCard.RevealCard(0.25f));
+        }
+    }
+
+    #endregion
+
+#region Leader
+
+    [PunRPC]
+    public void StartChooseEvent()
+    {
+        PreserveTextRPC("", 0);
+        DoFunction(() => ChangeButtonColor(false));
+        MoveScreen();
+        DeleteHistory();
+
+        Manager.instance.DoFunction(() => Manager.instance.Instructions($"Waiting on {this.name}..."), RpcTarget.Others);
+        RememberStep(this, StepType.UndoPoint, () => ChooseEvent());
+    }
+
+    void ChooseEvent()
+    {
+        ChooseCardFromPopup(myEvents.OfType<Card>().ToList(), Vector3.zero, "Choose an Event.", PlayEvent);
+
+        void PlayEvent()
+        {
+            EventCard chosenEvent = myEvents[choice];
+            PreserveTextRPC($"{this.name} reveals {chosenEvent.name}.", 0);
+
+            Manager.instance.DoFunction(() => Manager.instance.NewEvent(chosenEvent.pv.ViewID), RpcTarget.MasterClient);
+            RememberStep(this, StepType.Share, () => RevealEvent(false, chosenEvent.pv.ViewID));
+            RememberStep(this, StepType.UndoPoint, () => EndTurn());
+        }
+    }
+
+    public void EndTurn()
+    {
+        if (Log.instance.undosInLog.Count >= 1)
+            ChooseButton(new() { "End Turn" }, Vector3.zero, "Last chance to undo anything.", Done);
+        else
+            Done();
+
+        void Done()
+        {
+            ChangeRecentStep(StepType.None);
+            DoFunction(() => ChangeButtonColor(true));
+            Manager.instance.Instructions("Waiting on other players...");
+            Log.instance.undosInLog.Clear();
+            Manager.instance.DoFunction(() => Manager.instance.CompletedTurn(), RpcTarget.MasterClient);
+        }
+    }
+
+    #endregion
+
+#region Main Turn
+
+    List<PlayerCard> resolvedCards;
+
+    [PunRPC]
+    public void StartMainTurn()
+    {
+        DeleteHistory();
+        DoFunction(() => ChangeButtonColor(false));
+        MoveScreen();
+
+        PreserveTextRPC($"", 0);
+        PreserveTextRPC($"{this.name}'s Turn", 0);
+        RememberStep(this, StepType.UndoPoint, () => ChooseAction());
+    }
+
+    void ChooseAction()
+    {
+        ChooseCardFromPopup(Manager.instance.listOfActions.OfType<Card>().ToList(), Vector3.zero, "Choose an action.", Resolve);
+
+        void Resolve()
+        {
+            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
+            resolvedCards = new();
+
+            ActionCard action = (ActionCard)chosenCard;
+            PreserveTextRPC($"{this.name} chooses {action.name}.", 0);
+            action.ActivateThis(this, 1);
+        }
+    }
+
+    void ChooseToResolve()
+    {
+        List<Card> canResolve = new();
+        foreach (PlayerCard card in cardsInPlay)
+        {
+            if (!resolvedCards.Contains(card) && card.batteriesHere > 0)
+                canResolve.Add(card);
+        }
+        if (canResolve.Count == 0)
+        {
+            ChangeRecentStep(StepType.None);
+            FinishedMainTurn();
+        }
+        else
+        {
+            ChooseCardOnScreen(canResolve, "Choose a card to resolve.", Resolve);
+
+            void Resolve()
+            {
+                PlayerCard toResolve = (PlayerCard)chosenCard;
+                AddToStack(() => RememberStep(this, StepType.Revert, () => ResolveCard(false, toResolve)), true);
+            }
+        }
+    }
+
+    void ResolveCard(bool undo, PlayerCard card)
+    {
+        if (undo)
+        {
+            resolvedCards.Remove(card);
+        }
+        else
+        {
+            resolvedCards.Add(card);
+            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
+
+            card.BatteryRPC(this, -1, 0);
+            PreserveTextRPC($"{this.name} resolves {card.name}.", 0);
+            card.ActivateThis(this, 1);
+        }
+    }
+
+    void FinishedMainTurn()
+    {
+        ResolveAbilities(nameof(EndMyTurn), EndMyTurn.CheckParameters(), 0);
+        RememberStep(this, StepType.UndoPoint, () => EndTurn());
+    }
+
+    #endregion
+
 #region Decisions
 
     #region Choose
@@ -696,9 +890,24 @@ public class Player : PhotonCompatible
     public void ChangeButtonColor(bool done)
     {
         if (myButton != null)
-        {
             myButton.image.color = (done) ? Color.yellow : Color.white;
-        }
+    }
+
+    public void ChangeRecentStep(StepType type)
+    {
+        historyStack[currentStep].ChangeType(type, true);
+    }
+
+    public void PreserveTextRPC(string text, int logged)
+    {
+        RememberStep(this, StepType.Share, () => TextShared(false, text, logged));
+    }
+
+    [PunRPC]
+    void TextShared(bool undo, string text, int logged)
+    {
+        if (!undo)
+            Log.instance.AddText(text, logged);
     }
 
     #endregion

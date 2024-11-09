@@ -776,7 +776,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 8478697304549135352, guid: 8552ffe2815504ba6bdbebb2664acac5, type: 3}
-  cardPrefab: {fileID: 1761235060413094877, guid: d50eb448d0731474ebebdd3627d1ec5a, type: 3}
+  playerCardPrefab: {fileID: 0}
+  otherCardPrefab: {fileID: 0}
   textPopup: {fileID: 7594585533340515175, guid: 0ce383b7ea8ca488c810cadf3b089e7e, type: 3}
   cardPopup: {fileID: 3183939439193871304, guid: 293c9a8a887c64616a8e499c379c4cd7, type: 3}
   sliderPopup: {fileID: 291359092802989284, guid: 4e3e6bcfdb9d04bfaa9f8da769627677, type: 3}
@@ -2307,7 +2308,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Template
+  m_text: Battery Game 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8c64c47af7c1c4fb5b88d184433c6c44, type: 2}
   m_sharedMaterial: {fileID: -3852492252101762229, guid: 8c64c47af7c1c4fb5b88d184433c6c44, type: 2}

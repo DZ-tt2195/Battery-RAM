@@ -63,19 +63,6 @@ public class TriggeredAbility
     }
 }
 
-public class OncePawn : TriggeredAbility
-{
-    public OncePawn(PhotonCompatible source, Func<int, object[], int> numberAbility, Func<string, object[], bool> condition = null) : base(source, numberAbility, condition)
-    {
-        comparison = nameof(OncePawn);
-    }
-
-    public static object[] CheckParameters()
-    {
-        return new object[0];
-    }
-}
-
 public class EndMyTurn : TriggeredAbility
 {
     public EndMyTurn(PhotonCompatible source, Action<int, object[]> ability, Func<string, object[], bool> condition = null) : base(source, ability, condition)
@@ -89,20 +76,20 @@ public class EndMyTurn : TriggeredAbility
     }
 }
 
-public class DoBases : TriggeredAbility
+public class ChangeCoinCost : TriggeredAbility
 {
-    public DoBases(PhotonCompatible source, Func<int, object[], bool> boolAbility, Func<string, object[], bool> condition = null) : base(source, boolAbility, condition)
+    public ChangeCoinCost(PhotonCompatible source, Func<int, object[], int> numberAbility, Func<string, object[], bool> condition = null) : base(source, numberAbility, condition)
     {
-        comparison = nameof(DoBases);
+        comparison = nameof(ChangeCoinCost);
     }
 
-    public static object[] CheckParameters(Player player)
+    public static object[] CheckParameters(PlayerCard card)
     {
-        return new object[1] { player };
+        return new object[1] { card };
     }
 
-    public static Player ConvertParameters(object[] parameters)
+    public static PlayerCard ConvertParameters(object[] parameters)
     {
-        return (Player)parameters[0];
+        return (PlayerCard)parameters[0];
     }
 }
