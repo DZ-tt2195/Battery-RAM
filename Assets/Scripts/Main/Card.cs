@@ -5,7 +5,8 @@ using Photon.Pun;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
+using System;
+using System.Linq;
 
 public class Card : PhotonCompatible
 {
@@ -15,7 +16,15 @@ public class Card : PhotonCompatible
     public Button button { get; private set; }
     public Image border { get; private set; }
     public CanvasGroup cg { get; private set; }
-    public CardData dataFile { get; private set; }
+
+    protected Image background;
+    protected Image artBox;
+    protected TMP_Text cardName;
+    protected TMP_Text cardDescription;
+
+    protected List<string> activationSteps = new();
+    protected int stepCounter;
+    protected int sideCounter;
 
     #endregion
 
@@ -30,6 +39,47 @@ public class Card : PhotonCompatible
         button = GetComponent<Button>();
         cg = this.transform.Find("Canvas Group").GetComponent<CanvasGroup>();
         this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.instance.canvas.transform.localScale, 0.5f);
+
+        background = cg.transform.Find("Background").GetComponent<Image>();
+        cardDescription = cg.transform.Find("Card Description").GetComponent<TMP_Text>();
+        try
+        {
+            cardName = cg.transform.Find("Card Name").GetComponent<TMP_Text>();
+            cardName.text = this.name;
+            artBox = cg.transform.Find("Art Box").GetComponent<Image>();
+            artBox.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
+        }
+        catch { }
+    }
+
+    internal virtual void AssignInfo(int fileNumber)
+    {
+    }
+
+    protected void GetInstructions(CardData dataFile)
+    {
+        if (dataFile.useSheets)
+        {
+            activationSteps = SpliceString(dataFile.playInstructions);
+            foreach (string next in activationSteps)
+            {
+                if (FindMethod(next) == null)
+                    Debug.LogError($"{this.name} - {next} is wrong");
+            }
+        }
+
+        List<string> SpliceString(string text)
+        {
+            if (text.IsNullOrEmpty())
+            {
+                return new();
+            }
+            else
+            {
+                string divide = text.Replace(" ", "").Trim();
+                return divide.Split('/').ToList();
+            }
+        }
     }
 
     #endregion

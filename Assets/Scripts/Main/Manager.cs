@@ -30,6 +30,8 @@ public class Manager : PhotonCompatible
     [Foldout("Cards", true)]
     public Transform playerDeck;
     public Transform playerDiscard;
+    public Transform eventDeck;
+    public Transform eventDiscard;
 
     [Foldout("UI and Animation", true)]
     [SerializeField] TMP_Text instructions;
@@ -80,10 +82,18 @@ public class Manager : PhotonCompatible
 
         if (PhotonNetwork.IsMasterClient)
         {
-            for (int i = 0; i < CarryVariables.instance.cardFiles.Count; i++)
+            for (int i = 0; i < CarryVariables.instance.playerCardFiles.Count; i++)
             {
-                GameObject next = MakeObject(CarryVariables.instance.cardPrefab);
-                DoFunction(() => AddCard(next.GetComponent<PhotonView>().ViewID, i), RpcTarget.AllBuffered);
+                for (int j = 0; j < 2; j++)
+                {
+                    GameObject next = MakeObject(CarryVariables.instance.playerCardPrefab);
+                    DoFunction(() => AddPlayerCard(next.GetComponent<PhotonView>().ViewID, i), RpcTarget.AllBuffered);
+                }
+            }
+            for (int i = 0; i < CarryVariables.instance.eventCardFiles.Count; i++)
+            {
+                GameObject next = MakeObject(CarryVariables.instance.otherCardPrefab);
+                DoFunction(() => AddEventCard(next.GetComponent<PhotonView>().ViewID, i), RpcTarget.AllBuffered);
             }
         }
 
@@ -141,29 +151,44 @@ public class Manager : PhotonCompatible
     }
 
     [PunRPC]
-    void AddCard(int ID, int fileNumber)
+    void AddEventCard(int ID, int fileNumber)
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
-        CardData data = CarryVariables.instance.cardFiles[fileNumber];
-        /*
-        nextObject.name = data.name;
-        nextObject.transform.SetParent(deck);
+        CardData data = CarryVariables.instance.eventCardFiles[fileNumber];
 
-        allCards ??= new();
-        nextObject.transform.localPosition = new(250 * allCards.Count, 10000);
+        nextObject.name = data.name;
+        nextObject.transform.SetParent(eventDeck);
+        nextObject.transform.localPosition = new(250 * eventDeck.childCount, 10000);
 
         Type type = Type.GetType(data.name.Replace(" ", ""));
         if (type != null)
             nextObject.AddComponent(type);
-        else if (data.type == CardType.Troop)
-            nextObject.AddComponent(Type.GetType(nameof(TroopCard)));
-        else if (data.type == CardType.Spell)
-            nextObject.AddComponent(Type.GetType(nameof(SpellCard)));
         else
-            Debug.LogError($"failed to add type {data.name}/{data.type}");
-        */
+            nextObject.AddComponent(Type.GetType(nameof(EventCard)));
+
         Card card = nextObject.GetComponent<Card>();
-        //card.AssignInfo(allCards.Count, data);
+        card.AssignInfo(fileNumber);
+    }
+
+    [PunRPC]
+    void AddPlayerCard(int ID, int fileNumber)
+    {
+        GameObject nextObject = PhotonView.Find(ID).gameObject;
+        PlayerCardData data = CarryVariables.instance.playerCardFiles[fileNumber];
+
+        nextObject.name = data.name;
+        nextObject.transform.SetParent(playerDeck);
+
+        nextObject.transform.localPosition = new(250 * playerDeck.childCount, 10000);
+
+        Type type = Type.GetType(data.name.Replace(" ", ""));
+        if (type != null)
+            nextObject.AddComponent(type);
+        else
+            nextObject.AddComponent(Type.GetType(nameof(PlayerCard)));
+
+        Card card = nextObject.GetComponent<Card>();
+        card.AssignInfo(fileNumber);
     }
 
     #endregion

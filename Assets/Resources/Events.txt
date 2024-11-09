@@ -1,0 +1,63 @@
+{
+    [
+      "cardName",
+      "textBox",
+      "useSheets",
+      "playInstructions",
+      "cardAmount",
+      "coinAmount",
+      "crownAmount",
+      "batteryAmount",
+      "miscAmount",
+      "artCredit"
+    ],
+    [
+      "Brainstorm",
+      "\"+2 Card.\"",
+      "TRUE",
+      "DrawCards/ResolveRobots",
+      "2",
+      "",
+      "",
+      "",
+      "0",
+      "\"\""
+    ],
+    [
+      "Stockpile",
+      "\"+4 Coin.\"",
+      "TRUE",
+      "GainCoins/ResolveRobots",
+      "",
+      "4",
+      "",
+      "",
+      "0",
+      "\"\""
+    ],
+    [
+      "Recharge",
+      "\"+2 Battery.\"",
+      "TRUE",
+      "AddBatteryToMultiple/ResolveRobots",
+      "",
+      "",
+      "",
+      "2",
+      "0",
+      "\"\""
+    ],
+    [
+      "Construct",
+      "Play 1 Card.",
+      "TRUE",
+      "PlayCard/ResolveRobots",
+      "",
+      "",
+      "",
+      "",
+      "0",
+      "\"\""
+    ]
+  ]
+}

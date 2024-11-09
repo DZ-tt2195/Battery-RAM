@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 75048402}
   m_Layer: 5
-  m_Name: Discard
+  m_Name: Player Discard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1934,7 +1934,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1884429718}
   m_Layer: 5
-  m_Name: Deck
+  m_Name: Player Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

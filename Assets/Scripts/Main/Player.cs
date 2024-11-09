@@ -10,7 +10,7 @@ using System.Reflection;
 using System;
 using System.Linq.Expressions;
 
-public enum Resource { Coin, Food, Pawn }
+public enum Resource { Coin, Crown }
 public enum StepType { Share, UndoPoint, Revert, None }
 [Serializable]
 public class NextStep
@@ -45,12 +45,17 @@ public class Player : PhotonCompatible
     public Dictionary<Resource, int> resourceDictionary { get; private set; }
 
     [Foldout("Cards", true)]
-    public List<Card> cardsInHand = new();
+    public List<PlayerCard> cardsInHand = new();
+    public List<PlayerCard> cardsInPlay = new();
+    public List<EventCard> myEvents { get; private set; }
 
     [Foldout("UI", true)]
     Button myButton;
     Button resignButton;
     Transform keepHand;
+    Transform keepPlay;
+    [SerializeField] HoverPopup hoverEvent;
+    [SerializeField] TMP_Text resourceText;
 
     [Foldout("Undo", true)]
     [ReadOnly][SerializeField] int currentStep = -1;
@@ -76,6 +81,7 @@ public class Player : PhotonCompatible
 
         resignButton = GameObject.Find("Resign Button").GetComponent<Button>();
         keepHand = transform.Find("Keep Hand");
+        keepHand = transform.Find("Keep Play");
     }
 
     private void Start()
@@ -83,6 +89,7 @@ public class Player : PhotonCompatible
         this.transform.SetParent(Manager.instance.storePlayers);
         if (PhotonNetwork.IsConnected)
             this.name = pv.Owner.NickName;
+        hoverEvent.Setup(this, $"{this.name}'s Events", new(0, 250));
     }
 
     internal void AssignInfo(int position)
@@ -104,15 +111,128 @@ public class Player : PhotonCompatible
         resourceDictionary = new()
         {
             { Resource.Coin, 0 },
-            { Resource.Food, 0 },
-            { Resource.Pawn, 0 },
+            { Resource.Crown, 0 },
         };
 
         if (InControl())
         {
             resignButton.onClick.AddListener(() => Manager.instance.DisplayEnding(this.playerPosition));
+
+            DoFunction(() => DrawPlayerCards(4, 0), RpcTarget.MasterClient);
+
+            if (!PhotonNetwork.IsConnected || PhotonNetwork.CurrentRoom.MaxPlayers <= 2)
+                DoFunction(() => DrawEventCards(3), RpcTarget.MasterClient);
+            else
+                DoFunction(() => DrawEventCards(2), RpcTarget.MasterClient);
+
             Invoke(nameof(MoveScreen), 0.25f);
         }
+    }
+
+    #endregion
+
+#region Events
+
+    [PunRPC]
+    void DrawEventCards(int number)
+    {
+        if (Manager.instance.eventDeck.childCount < number)
+        {
+            Manager.instance.eventDiscard.Shuffle();
+            while (Manager.instance.eventDiscard.childCount > 0)
+            {
+                Transform nextChild = Manager.instance.eventDiscard.GetChild(0);
+                nextChild.SetParent(Manager.instance.eventDeck);
+                nextChild.SetAsLastSibling();
+            }
+        }
+
+        for (int i = 0; i < number; i++)
+        {
+            Card card = Manager.instance.eventDeck.GetChild(i).GetComponent<Card>();
+            DoFunction(() => ReceiveEvent(card.pv.ViewID));
+        }
+    }
+
+    [PunRPC]
+    void ReceiveEvent(int PV)
+    {
+        EventCard card = PhotonView.Find(PV).GetComponent<EventCard>();
+        myEvents.Add(card);
+        hoverEvent.AddCard(card, InControl() ? 0.75f : 0, "View Revealed\nEvents");
+    }
+
+    [PunRPC]
+    void RevealEvent(bool undo, int PV)
+    {
+        EventCard card = PhotonView.Find(PV).GetComponent<EventCard>();
+        (CanvasGroup group, int index) = hoverEvent.FindCard(card);
+        if (group != null && group.alpha < 1)
+        {
+            if (undo)
+            {
+                hoverEvent.RemoveCard(index, "View Revealed\nEvents");
+                hoverEvent.AddCard(card, InControl() ? 0.75f : 0, "View Revealed\nEvents");
+            }
+            else
+            {
+                hoverEvent.RemoveCard(index, "View Revealed\nEvents");
+                hoverEvent.AddCard(card, 1, "View Revealed\nEvents");
+            }
+        }
+    }
+
+    #endregion
+
+#region Resources
+
+    void UpdateResourceText()
+    {
+        resourceText.text = KeywordTooltip.instance.EditText($"{this.name}: " +
+            $"{resourceDictionary[Resource.Coin]} Coin, " +
+            $"{resourceDictionary[Resource.Crown]} Food, " +
+            $" | " +
+            $"Total Crown: {CalculateScore()}");
+    }
+
+    public int CalculateScore()
+    {
+        int answer = resourceDictionary[Resource.Crown];
+        foreach (PlayerCard card in cardsInPlay)
+            answer += card.dataFile.scoringCrowns;
+        return answer;
+    }
+
+    public void ResourceRPC(Resource resource, int number, int logged, string source = "")
+    {
+        int actualAmount = number;
+        if (resource != Resource.Crown)
+        {
+            if (resourceDictionary[resource] + number < 0)
+                actualAmount = -1 * resourceDictionary[resource];
+        }
+        if (actualAmount != 0)
+            RememberStep(this, StepType.Share, () => ChangeResource(false, (int)resource, actualAmount, source, logged));
+    }
+
+    [PunRPC]
+    void ChangeResource(bool undo, int resource, int amount, string source, int logged)
+    {
+        if (undo)
+        {
+            resourceDictionary[(Resource)resource] -= amount;
+        }
+        else
+        {
+            string parathentical = source == "" ? "" : $"({source})";
+            resourceDictionary[(Resource)resource] += amount;
+
+            if (amount >= 0)
+                Log.instance.AddText($"{this.name} gets +{Mathf.Abs(amount)} {(Resource)resource} {parathentical}.", logged);
+            else
+                Log.instance.AddText($"{this.name} loses {Mathf.Abs(amount)} {(Resource)resource} {parathentical}.", logged);
+        }
+        UpdateResourceText();
     }
 
     #endregion
@@ -155,7 +275,7 @@ public class Player : PhotonCompatible
         }
         else
         {
-            Card card = PhotonView.Find(PV).GetComponent<Card>();
+            PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
             cardsInHand.Add(card);
 
             if (InControl())
@@ -172,7 +292,7 @@ public class Player : PhotonCompatible
     [PunRPC]
     void ReturnToDeck(int PV)
     {
-        Card card = PhotonView.Find(PV).GetComponent<Card>();
+        PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
         cardsInHand.Remove(card);
         card.transform.SetParent(Manager.instance.playerDeck);
         card.transform.SetAsFirstSibling();
@@ -209,7 +329,7 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void DiscardFromHand(bool undo, int PV, int logged)
     {
-        Card card = PhotonView.Find(PV).GetComponent<Card>();
+        PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
 
         if (undo)
         {

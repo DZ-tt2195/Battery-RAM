@@ -15,6 +15,24 @@ using System;
 [Serializable]
 public class CardData
 {
+    public string name;
+    public string textBox;
+    public string playInstructions;
+    public bool useSheets;
+    public int cardAmount;
+    public int coinAmount;
+    public int batteryAmount;
+    public int crownAmount;
+    public int miscAmount;
+    public string artCredit;
+}
+
+[Serializable]
+public class PlayerCardData: CardData
+{
+    public int coinCost;
+    public int startingBatteries;
+    public int scoringCrowns;
 }
 
 public class CarryVariables : MonoBehaviour
@@ -25,15 +43,19 @@ public class CarryVariables : MonoBehaviour
     public static CarryVariables instance;
     [Foldout("Prefabs", true)]
     public Player playerPrefab;
-    public GameObject cardPrefab;
+    public GameObject playerCardPrefab;
+    public GameObject otherCardPrefab;
     public Popup textPopup;
     public Popup cardPopup;
     public SliderChoice sliderPopup;
     public Button playerButtonPrefab;
 
     [Foldout("Card data", true)]
-    public List<CardData> cardFiles { get; private set; }
-    string sheetURL = "";
+    public List<CardData> actionFiles { get; private set; }
+    public List<PlayerCardData> playerCardFiles { get; private set; }
+    public List<CardData> eventCardFiles { get; private set; }
+
+    string sheetURL = "1ded6BsFZUQjSxAKS9LrqqGTuEx9qk6914dgrfJQwir4";
     string apiKey = "AIzaSyCl_GqHd1-WROqf7i2YddE3zH6vSv3sNTA";
     string baseUrl = "https://sheets.googleapis.com/v4/spreadsheets/";
 
@@ -145,14 +167,16 @@ public class CarryVariables : MonoBehaviour
     IEnumerator GetScripts()
     {
         CoroutineGroup group = new(this);
-        //group.StartCoroutine(Download("Starting Bases"));
+        group.StartCoroutine(Download("Actions"));
+        group.StartCoroutine(Download("Player Cards"));
+        group.StartCoroutine(Download("Events"));
         while (group.AnyProcessing)
             yield return null;
-        /*
+
         playerCardFiles = GetDataFiles<PlayerCardData>(ReadFile("Player Cards"));
-        startingBaseFiles = GetDataFiles<BaseCardData>(ReadFile("Starting Bases"));
+        actionFiles = GetDataFiles<CardData>(ReadFile("Actions"));
         eventCardFiles = GetDataFiles<CardData>(ReadFile("Events"));
-        */
+
         string[][] ReadFile(string range)
         {
             TextAsset data = Resources.Load($"{range}") as TextAsset;
