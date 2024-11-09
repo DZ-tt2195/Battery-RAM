@@ -98,7 +98,7 @@ public class PlayerCard : Card, IPointerClickHandler
 
 #region Ministeps
 
-    protected void SetToBatteriesHere(Player player, CardData dataFile, int logged)
+    protected void SetToBatteryHere(Player player, CardData dataFile, int logged)
     {
         SetAllStats(this.batteriesHere, dataFile);
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));

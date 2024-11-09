@@ -910,6 +910,14 @@ public class Player : PhotonCompatible
             Log.instance.AddText(text, logged);
     }
 
+    public int TotalBatteries()
+    {
+        int answer = 0;
+        foreach (PlayerCard card in cardsInPlay)
+            answer += card.batteriesHere;
+        return answer;
+    }
+
     #endregion
 
 }

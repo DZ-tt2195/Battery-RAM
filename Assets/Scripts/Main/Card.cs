@@ -256,9 +256,15 @@ public class Card : PhotonCompatible
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
-    protected void SetToMoney(Player player, CardData dataFile, int logged)
+    protected void SetToCoin(Player player, CardData dataFile, int logged)
     {
         SetAllStats(player.resourceDictionary[Resource.Coin], dataFile);
+        player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+    }
+
+    protected void SetToTotalBattery(Player player, CardData dataFile, int logged)
+    {
+        SetAllStats(player.TotalBatteries(), dataFile);
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
@@ -286,14 +292,24 @@ public class Card : PhotonCompatible
         CheckBool(player.resourceDictionary[Resource.Coin] <= dataFile.miscAmount, player, dataFile, logged);
     }
 
+    protected void TotalBatteryOrMore(Player player, CardData dataFile, int logged)
+    {
+        CheckBool(player.TotalBatteries() >= dataFile.miscAmount, player, dataFile, logged);
+    }
+
+    protected void TotalBatteryOrLess(Player player, CardData dataFile, int logged)
+    {
+        CheckBool(player.TotalBatteries() <= dataFile.miscAmount, player, dataFile, logged);
+    }
+
+
     #endregion
 
-    #region Discarding
+    #region Discard
 
     protected void DiscardCard(Player player, CardData dataFile, int logged)
     {
-        Action action = () => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
-        player.AddToStack(() => action(), true);
+        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
 
         player.RememberStep(this, (player.cardsInHand.Count <= 1) ? StepType.None : StepType.UndoPoint,
             () => ChooseDiscard(player, dataFile, false, 1, logged));
@@ -301,7 +317,7 @@ public class Card : PhotonCompatible
 
     protected void AskDiscard(Player player, CardData dataFile, int logged)
     {
-        if (player.cardsInHand.Count == 0)
+        if (player.cardsInHand.Count < dataFile.cardAmount)
         {
             CheckBool(false, player, dataFile, logged);
             return;
@@ -322,7 +338,7 @@ public class Card : PhotonCompatible
         string parathentical = (dataFile.cardAmount == 1) ? "" : $"({counter}/{dataFile.cardAmount})";
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard a card {parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard a Card {parathentical}.", Next);
 
         void Next()
         {
@@ -349,6 +365,100 @@ public class Card : PhotonCompatible
 
     #endregion
 
+    #region Battery
+
+    protected void AddBattery(Player player, CardData dataFile, int logged)
+    {
+        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
+
+        player.RememberStep(this, (player.cardsInPlay.Count <= 1) ? StepType.None : StepType.UndoPoint,
+            () => ChooseAddBattery(player, dataFile, 1, logged));
+    }
+
+    void ChooseAddBattery(Player player, CardData dataFile, int counter, int logged)
+    {
+        sideCounter = counter;
+        string parathentical = (dataFile.batteryAmount == 1) ? "" : $"({counter}/{dataFile.batteryAmount})";
+        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Battery {parathentical}.", Next);
+
+        void Next()
+        {
+            if (player.chosenCard != null)
+            {
+                sideCounter++;
+                PlayerCard playerCard = (PlayerCard)player.chosenCard;
+                playerCard.BatteryRPC(player, 1, logged, this.name);
+
+                if (counter == dataFile.batteryAmount)
+                    player.PopStack();
+                else
+                    player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter, logged));
+            }
+            else
+            {
+                player.PreserveTextRPC($"{player.name} can't add any Battery.", logged);
+                player.PopStack();
+            }
+        }
+    }
+
+    protected void LoseBattery(Player player, CardData dataFile, int logged)
+    {
+        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
+
+        player.RememberStep(this, (player.TotalBatteries() <= 1) ? StepType.None : StepType.UndoPoint,
+            () => ChooseLoseBattery(player, dataFile, false, 1, logged));
+    }
+
+    protected void AskLoseBattery(Player player, CardData dataFile, int logged)
+    {
+        if (player.TotalBatteries() < dataFile.batteryAmount)
+        {
+            CheckBool(false, player, dataFile, logged);
+            return;
+        }
+
+        player.AddToStack(() => FinishedRemoving(), true);
+        player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, true, 1, logged));
+
+        void FinishedRemoving()
+        {
+            CheckBool(sideCounter == dataFile.batteryAmount, player, dataFile, logged);
+        }
+    }
+
+    void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int counter, int logged)
+    {
+        sideCounter = counter;
+        string parathentical = (dataFile.batteryAmount == 1) ? "" : $"({counter}/{dataFile.batteryAmount})";
+        if (optional)
+            player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
+        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Remove a Battery {parathentical}.", Next);
+
+        void Next()
+        {
+            if (player.chosenCard != null)
+            {
+                sideCounter++;
+                PlayerCard playerCard = (PlayerCard)player.chosenCard;
+                playerCard.BatteryRPC(player, -1, logged, this.name);
+
+                if (counter == dataFile.batteryAmount)
+                    player.PopStack();
+                else
+                    player.RememberStep(this, (player.TotalBatteries() <= 1) ? StepType.None : StepType.UndoPoint,
+                        () => ChooseLoseBattery(player, dataFile, false, sideCounter, logged));
+            }
+            else
+            {
+                player.PreserveTextRPC($"{player.name} doesn't remove any Battery.", logged);
+                player.PopStack();
+            }
+        }
+    }
+
+    #endregion
+
     #region Ask Pay
 
     protected void AskLoseCoin(Player player, CardData dataFile, int logged)
@@ -364,6 +474,13 @@ public class Card : PhotonCompatible
             $"Pay {dataFile.coinAmount} Coin to {this.name}?", dataFile, logged));
     }
 
+    protected void AskLoseCrown(Player player, CardData dataFile, int logged)
+    {
+        Action action = () => LoseCrown(player, dataFile, logged);
+        player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
+            $"Lose {dataFile.crownAmount} Crown for {this.name}?", dataFile, logged));
+    }
+
     void ChoosePay(Player player, Action ifDone, string text, CardData dataFile, int logged)
     {
         player.ChooseButton(new() { "Yes", "No" }, new(0, 250), text, Next);
@@ -376,7 +493,7 @@ public class Card : PhotonCompatible
             }
             else
             {
-                player.PreserveTextRPC($"{player.name} doesn't pay for {this.name}.", logged);
+                player.PreserveTextRPC($"{player.name} doesn't use {this.name}.", logged);
                 CheckBool(false, player, dataFile, logged);
             }
         }
