@@ -348,10 +348,10 @@ public class Card : PhotonCompatible
     void ChooseDiscard(Player player, CardData dataFile, bool optional, int counter, int logged)
     {
         sideCounter = counter;
-        string parathentical = (dataFile.cardAmount == 1) ? "" : $"({counter}/{dataFile.cardAmount})";
+        string parathentical = (dataFile.cardAmount == 1) ? "" : $" ({counter}/{dataFile.cardAmount})";
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard a Card {parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard a Card{parathentical}.", Next);
 
         void Next()
         {
@@ -391,8 +391,8 @@ public class Card : PhotonCompatible
     void ChooseAddBattery(Player player, CardData dataFile, int counter, int logged)
     {
         sideCounter = counter;
-        string parathentical = (dataFile.batteryAmount == 1) ? "" : $"({counter}/{dataFile.batteryAmount})";
-        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Food {parathentical}.", Next);
+        string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({counter}/{dataFile.batteryAmount})";
+        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Battery{parathentical}.", Next);
 
         void Next()
         {
@@ -443,10 +443,10 @@ public class Card : PhotonCompatible
     void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int counter, int logged)
     {
         sideCounter = counter;
-        string parathentical = (dataFile.batteryAmount == 1) ? "" : $"({counter}/{dataFile.batteryAmount})";
+        string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({counter}/{dataFile.batteryAmount})";
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Remove a Battery {parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Remove a Battery{parathentical}.", Next);
 
         void Next()
         {

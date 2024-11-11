@@ -254,6 +254,21 @@ public class Manager : PhotonCompatible
     {
         if (currentStep < actionStack.Count - 1)
         {
+            playerDiscard.Shuffle();
+            while (playerDiscard.childCount > 0)
+            {
+                Transform nextChild = playerDiscard.GetChild(0);
+                nextChild.SetParent(playerDeck);
+                nextChild.SetAsLastSibling();
+            }
+            eventDiscard.Shuffle();
+            while (eventDiscard.childCount > 0)
+            {
+                Transform nextChild = eventDiscard.GetChild(0);
+                nextChild.SetParent(eventDeck);
+                nextChild.SetAsLastSibling();
+            }
+
             currentStep++;
             actionStack[currentStep]();
         }

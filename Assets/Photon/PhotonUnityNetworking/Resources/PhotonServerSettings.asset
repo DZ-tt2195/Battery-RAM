@@ -98,6 +98,10 @@ MonoBehaviour:
   - StartChooseEvent
   - StartMainTurn
   - ChangeFood
+  - DiscardEvent
+  - ReturnEventToDeck
+  - ReturnPlayerCardToDeck
+  - SendEventCardToAsker
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 0

@@ -52,6 +52,12 @@ public class HoverPopup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         return (null, -1);
     }
 
+    internal void RemoveCard(Card card, string text)
+    {
+        (CanvasGroup target, int index) = FindCard(card);
+        RemoveCard(index, text);
+    }
+
     internal void RemoveCard(int index, string text)
     {
         if (index >= 0)
