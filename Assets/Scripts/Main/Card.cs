@@ -216,7 +216,7 @@ public class Card : PhotonCompatible
 
     List<PlayerCard> canPlay;
 
-    protected virtual void PlayCard(Player player, CardData dataFile, int logged)
+    protected void PlayCard(Player player, CardData dataFile, int logged)
     {
         canPlay = player.cardsInHand.Where(card => card.CanPayCost(player)).ToList();
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class RobotShopkeeper : PlayerCard
+public class RobotCrafter : PlayerCard
 {
     List<PlayerCard> canPlay;
 
@@ -32,7 +32,7 @@ public class RobotShopkeeper : PlayerCard
             {
                 PlayerCard cardToPlay = (PlayerCard)player.chosenCard;
                 player.PlayCard(cardToPlay, true, logged);
-                cardToPlay.BatteryRPC(player, -1 * cardToPlay.batteryHere, logged);
+                cardToPlay.BatteryRPC(player, GetFile().batteryAmount, logged);
             }
             else
             {
