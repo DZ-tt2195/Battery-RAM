@@ -12,7 +12,7 @@ public class PlayerCard : Card
     PlayerCardData dataFile;
     TMP_Text cardStats;
     TMP_Text batteryText;
-    public int batteriesHere { get; private set; }
+    public int batteryHere { get; private set; }
 
     protected override void Awake()
     {
@@ -27,9 +27,10 @@ public class PlayerCard : Card
         dataFile = CarryVariables.instance.playerCardFiles[fileNumber];
         background.color = Color.blue;
         GetInstructions(dataFile);
+        UpdateBatteryText();
 
-        cardName.text = KeywordTooltip.instance.EditText($"{dataFile.name}     {dataFile.coinCost} Coin");
-        cardStats.text = KeywordTooltip.instance.EditText($"{dataFile.startingBatteries} Battery | {dataFile.scoringCrowns} Crown");
+        cardName.text = KeywordTooltip.instance.EditText($"{dataFile.cardName}   {dataFile.coinCost} Coin");
+        cardStats.text = KeywordTooltip.instance.EditText($"{dataFile.startingBattery} Battery | {dataFile.scoringCrowns} Crown");
         cardDescription.text = KeywordTooltip.instance.EditText(dataFile.textBox);
     }
 
@@ -52,13 +53,13 @@ public class PlayerCard : Card
 
     #endregion
 
-#region Batteries
+#region Battery
 
     public void BatteryRPC(Player player, int number, int logged, string source = "")
     {
         int actualAmount = number;
-        if (batteriesHere + number < 0)
-            actualAmount = -1 * batteriesHere;
+        if (batteryHere + number < 0)
+            actualAmount = -1 * batteryHere;
         if (actualAmount != 0)
             player.RememberStep(this, StepType.Share, () => this.ChangeBattery(false, player.playerPosition, actualAmount, source, logged));
         UpdateBatteryText();
@@ -70,12 +71,12 @@ public class PlayerCard : Card
         Player player = Manager.instance.playersInOrder[playerPosition];
         if (undo)
         {
-            batteriesHere -= amount;
+            batteryHere -= amount;
         }
         else
         {
             string parathentical = source == "" ? "" : $"({source})";
-            batteriesHere += amount;
+            batteryHere += amount;
 
             if (amount >= 0)
                 Log.instance.AddText($"{player.name} adds {Mathf.Abs(amount)} Battery to {this.name} {parathentical}.", logged);
@@ -87,8 +88,8 @@ public class PlayerCard : Card
 
     void UpdateBatteryText()
     {
-        batteryText.text = KeywordTooltip.instance.EditText($"{batteriesHere} Battery");
-        batteryText.transform.parent.gameObject.SetActive(batteriesHere > 0);
+        batteryText.text = KeywordTooltip.instance.EditText($"{batteryHere} Battery");
+        batteryText.transform.parent.gameObject.SetActive(batteryHere > 0);
     }
 
     #endregion
@@ -97,7 +98,7 @@ public class PlayerCard : Card
 
     protected void SetToBatteryHere(Player player, CardData dataFile, int logged)
     {
-        SetAllStats(this.batteriesHere, dataFile);
+        SetAllStats(this.batteryHere, dataFile);
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 

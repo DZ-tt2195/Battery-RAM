@@ -15,7 +15,7 @@ using System;
 [Serializable]
 public class CardData
 {
-    public string name;
+    public string cardName;
     public string textBox;
     public string playInstructions;
     public bool useSheets;
@@ -31,7 +31,7 @@ public class CardData
 public class PlayerCardData: CardData
 {
     public int coinCost;
-    public int startingBatteries;
+    public int startingBattery;
     public int scoringCrowns;
 }
 
@@ -107,12 +107,16 @@ public class CarryVariables : MonoBehaviour
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
+        {
+            blackBackground.gameObject.SetActive(false);
             rightClickBackground.gameObject.SetActive(false);
+        }
     }
 
     public void RightClickDisplay(CanvasGroup group, string text = null)
     {
         CanvasGroup newGroup = Instantiate(group);
+        blackBackground.gameObject.SetActive(true);
         rightClickBackground.gameObject.SetActive(true);
         try { Destroy(rightClickCard.transform.GetChild(0).gameObject); } catch { }
 
@@ -132,6 +136,8 @@ public class CarryVariables : MonoBehaviour
         newGroup.transform.localPosition = Vector3.zero;
         if (group.alpha > 0)
             group.alpha = 1;
+        foreach (Transform child in group.transform)
+            child.gameObject.AddComponent<KeywordLinkHover>();
     }
 
     #endregion

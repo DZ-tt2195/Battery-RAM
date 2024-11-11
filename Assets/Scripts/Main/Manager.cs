@@ -164,11 +164,11 @@ public class Manager : PhotonCompatible
         GameObject nextObject = PhotonView.Find(ID).gameObject;
         CardData data = CarryVariables.instance.eventCardFiles[fileNumber];
 
-        nextObject.name = data.name;
+        nextObject.name = data.cardName;
         nextObject.transform.SetParent(eventDeck);
         nextObject.transform.localPosition = new(250 * eventDeck.childCount, 10000);
 
-        Type type = Type.GetType(data.name.Replace(" ", ""));
+        Type type = Type.GetType(data.cardName.Replace(" ", ""));
         if (type != null)
             nextObject.AddComponent(type);
         else
@@ -183,9 +183,9 @@ public class Manager : PhotonCompatible
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
         CardData data = CarryVariables.instance.actionFiles[fileNumber];
-        nextObject.name = data.name;
+        nextObject.name = data.cardName;
 
-        Type type = Type.GetType(data.name.Replace(" ", ""));
+        Type type = Type.GetType(data.cardName.Replace(" ", ""));
         if (type != null)
             nextObject.AddComponent(type);
         else
@@ -202,11 +202,11 @@ public class Manager : PhotonCompatible
         GameObject nextObject = PhotonView.Find(ID).gameObject;
         PlayerCardData data = CarryVariables.instance.playerCardFiles[fileNumber];
 
-        nextObject.name = data.name;
+        nextObject.name = data.cardName;
         nextObject.transform.SetParent(playerDeck);
         nextObject.transform.localPosition = new(250 * playerDeck.childCount, 10000);
 
-        Type type = Type.GetType(data.name.Replace(" ", ""));
+        Type type = Type.GetType(data.cardName.Replace(" ", ""));
         if (type != null)
             nextObject.AddComponent(type);
         else

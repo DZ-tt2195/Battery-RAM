@@ -82,6 +82,7 @@ public class Player : PhotonCompatible
         resignButton = GameObject.Find("Resign Button").GetComponent<Button>();
         keepHand = transform.Find("Keep Hand");
         keepHand = transform.Find("Keep Play");
+        myEvents = new();
     }
 
     private void Start()
@@ -368,7 +369,7 @@ public class Player : PhotonCompatible
                 this.ResourceRPC(Resource.Coin, -1 * coinCost, logged);
         }
         RememberStep(this, StepType.Share, () => AddToPlay(false, card.pv.ViewID, logged));
-        card.BatteryRPC(this, data.startingBatteries, -1);
+        card.BatteryRPC(this, data.startingBattery, -1);
     }
 
     [PunRPC]
@@ -437,7 +438,7 @@ public class Player : PhotonCompatible
 
     void ChooseEvent()
     {
-        ChooseCardFromPopup(myEvents.OfType<Card>().ToList(), Vector3.zero, "Choose an Event.", PlayEvent);
+        ChooseCardFromPopup(myEvents.OfType<Card>().ToList(), Vector3.zero, "Choose an Event for all players.", PlayEvent);
 
         void PlayEvent()
         {
@@ -505,7 +506,7 @@ public class Player : PhotonCompatible
         List<Card> canResolve = new();
         foreach (PlayerCard card in cardsInPlay)
         {
-            if (!resolvedCards.Contains(card) && card.batteriesHere > 0)
+            if (!resolvedCards.Contains(card) && card.batteryHere > 0)
                 canResolve.Add(card);
         }
         if (canResolve.Count == 0)
@@ -916,11 +917,11 @@ public class Player : PhotonCompatible
             Log.instance.AddText(text, logged);
     }
 
-    public int TotalBatteries()
+    public int TotalBattery()
     {
         int answer = 0;
         foreach (PlayerCard card in cardsInPlay)
-            answer += card.batteriesHere;
+            answer += card.batteryHere;
         return answer;
     }
 

@@ -11,7 +11,8 @@ public class KeywordLinkHover : MonoBehaviour
 
     private void Awake()
     {
-        myText = GetComponent<TMP_Text>();
+        if (!TryGetComponent(out myText))
+            Destroy(this);
         rectTrans = GetComponent<RectTransform>();
     }
 

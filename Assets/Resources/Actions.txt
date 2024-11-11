@@ -12,7 +12,7 @@
       "artCredit"
     ],
     [
-      "Brainstorm",
+      "Research",
       "\"+2 Card.\"",
       "TRUE",
       "DrawCard",
@@ -21,7 +21,7 @@
       "",
       "",
       "0",
-      "\"\""
+      "Julien Delval/Dominion: Renaissance"
     ],
     [
       "Stockpile",
@@ -33,7 +33,7 @@
       "",
       "",
       "0",
-      "\"\""
+      "Grant Hansen/Dominion: Menagerie"
     ],
     [
       "Recharge",
@@ -45,10 +45,10 @@
       "",
       "2",
       "0",
-      "\"\""
+      "Svetlin Velinov/MTG: Guilds of Ravnica/(League Guildmage)"
     ],
     [
-      "Construct",
+      "Invent",
       "Play 1 Card.",
       "TRUE",
       "PlayCard",
@@ -57,7 +57,7 @@
       "",
       "",
       "0",
-      "\"\""
+      "Ryan Laukat/Dominion: Renaissance/(Innovation)"
     ]
   ]
 }

@@ -216,7 +216,7 @@ public class Card : PhotonCompatible
 
     List<PlayerCard> canPlay;
 
-    protected void PlayCombine(Player player, CardData dataFile, int logged)
+    protected void PlayCard(Player player, CardData dataFile, int logged)
     {
         canPlay = player.cardsInHand.Where(card => card.CanPayCost(player)).ToList();
 
@@ -264,6 +264,12 @@ public class Card : PhotonCompatible
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
+    protected void SetToPlayArea(Player player, CardData dataFile, int logged)
+    {
+        SetAllStats(player.cardsInPlay.Count, dataFile);
+        player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+    }
+
     protected void SetToCoin(Player player, CardData dataFile, int logged)
     {
         SetAllStats(player.resourceDictionary[Resource.Coin], dataFile);
@@ -272,7 +278,7 @@ public class Card : PhotonCompatible
 
     protected void SetToTotalBattery(Player player, CardData dataFile, int logged)
     {
-        SetAllStats(player.TotalBatteries(), dataFile);
+        SetAllStats(player.TotalBattery(), dataFile);
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
@@ -302,14 +308,13 @@ public class Card : PhotonCompatible
 
     protected void TotalBatteryOrMore(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.TotalBatteries() >= dataFile.miscAmount, player, dataFile, logged);
+        CheckBool(player.TotalBattery() >= dataFile.miscAmount, player, dataFile, logged);
     }
 
     protected void TotalBatteryOrLess(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.TotalBatteries() <= dataFile.miscAmount, player, dataFile, logged);
+        CheckBool(player.TotalBattery() <= dataFile.miscAmount, player, dataFile, logged);
     }
-
 
     #endregion
 
@@ -373,7 +378,7 @@ public class Card : PhotonCompatible
 
     #endregion
 
-    #region Battery
+    #region Food
 
     protected void AddBattery(Player player, CardData dataFile, int logged)
     {
@@ -387,7 +392,7 @@ public class Card : PhotonCompatible
     {
         sideCounter = counter;
         string parathentical = (dataFile.batteryAmount == 1) ? "" : $"({counter}/{dataFile.batteryAmount})";
-        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Battery {parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Food {parathentical}.", Next);
 
         void Next()
         {
@@ -414,13 +419,13 @@ public class Card : PhotonCompatible
     {
         player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
 
-        player.RememberStep(this, (player.TotalBatteries() <= 1) ? StepType.None : StepType.UndoPoint,
+        player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
             () => ChooseLoseBattery(player, dataFile, false, 1, logged));
     }
 
     protected void AskLoseBattery(Player player, CardData dataFile, int logged)
     {
-        if (player.TotalBatteries() < dataFile.batteryAmount)
+        if (player.TotalBattery() < dataFile.batteryAmount)
         {
             CheckBool(false, player, dataFile, logged);
             return;
@@ -454,7 +459,7 @@ public class Card : PhotonCompatible
                 if (counter == dataFile.batteryAmount)
                     player.PopStack();
                 else
-                    player.RememberStep(this, (player.TotalBatteries() <= 1) ? StepType.None : StepType.UndoPoint,
+                    player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
                         () => ChooseLoseBattery(player, dataFile, false, sideCounter, logged));
             }
             else

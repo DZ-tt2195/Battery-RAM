@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Text.RegularExpressions;
+using MyBox;
 
 [Serializable]
 public class KeywordHover
@@ -83,8 +84,7 @@ public class KeywordTooltip : MonoBehaviour
     {
         return new Vector3
             (Mathf.Clamp(mousePosition.x, XCap, Screen.width-XCap),
-            mousePosition.y + (mousePosition.y > Ydisplace ? -0.5f : 0.5f) * Ydisplace,
-            0);
+            mousePosition.y + (mousePosition.y > Ydisplace ? -0.5f : 0.5f) * Ydisplace, 0);
     }
 
     public void ActivateTextBox(string target, Vector3 mousePosition)
@@ -98,8 +98,11 @@ public class KeywordTooltip : MonoBehaviour
             {
                 if (keyword.Equals(target))
                 {
-                    tooltipText.text = entry.description;
-                    tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                    if (string.IsNullOrEmpty(entry.description))
+                    {
+                        tooltipText.text = entry.description;
+                        tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                    }
                     return;
                 }
             }
@@ -108,8 +111,11 @@ public class KeywordTooltip : MonoBehaviour
         {
             if (entry.keywordVariations[0].Equals(target))
             {
-                tooltipText.text = entry.description;
-                tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                if (string.IsNullOrEmpty(entry.description))
+                {
+                    tooltipText.text = entry.description;
+                    tooltipText.transform.parent.position = CalculatePosition(mousePosition);
+                }
                 return;
             }
         }
