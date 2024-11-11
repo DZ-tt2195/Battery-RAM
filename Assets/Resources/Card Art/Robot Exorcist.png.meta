@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 40be8a291ea2348b68a014c39b720c82
+guid: 852ba361af0f24904b7770f0bc44fe77
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1199951192010600527
-    second: VillanousRobot_0
+      213: -8058872157353338222
+    second: RobotExorcist_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: VillanousRobot_0
+      name: RobotExorcist_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1524
-        height: 1124
+        width: 1464
+        height: 1046
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1bfc66c9fbae85fe0800000000000000
-      internalID: -1199951192010600527
+      spriteID: 29a1baa7872292090800000000000000
+      internalID: -8058872157353338222
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      RobotExorcist_0: -8058872157353338222
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

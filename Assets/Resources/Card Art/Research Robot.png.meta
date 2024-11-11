@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 11a1d6b189081411c85f8935f74b34ab
+guid: d6377f24a0bf44e0a99556a2c77ed4eb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6565156719914894827
-    second: RobotInventor_0
+      213: -3299809587799683382
+    second: ResearchRobot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RobotInventor_0
+      name: ResearchRobot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: be5cb49c04f1c1b50800000000000000
-      internalID: 6565156719914894827
+      spriteID: ace85ccb9a8b432d0800000000000000
+      internalID: -3299809587799683382
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      ResearchRobot_0: -3299809587799683382
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

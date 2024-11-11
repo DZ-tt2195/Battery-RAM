@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1a94030b883384eb8bb30790dda950be
+guid: 1e5fa1b38d30c4a499d47bbd72f76975
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2037819526944148737
-    second: RobotShopkeeper_0
+      213: -893925025953068435
+    second: HuntingRobot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RobotShopkeeper_0
+      name: HuntingRobot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 10d4cdb101ac74c10800000000000000
-      internalID: 2037819526944148737
+      spriteID: d6a4c34dce32893f0800000000000000
+      internalID: -893925025953068435
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      HuntingRobot_0: -893925025953068435
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

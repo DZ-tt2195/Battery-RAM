@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 39563ca74a8024bbd8a03855c8654a16
+guid: 40be8a291ea2348b68a014c39b720c82
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1489929888717613547
-    second: GluttonousRobot_0
+      213: -6701056891116798452
+    second: Villanous Robot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GluttonousRobot_0
+      name: Villanous Robot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 516dfb209a4b25be0800000000000000
-      internalID: -1489929888717613547
+      spriteID: c0ebc41e2401103a0800000000000000
+      internalID: -6701056891116798452
       vertices: []
       indices: 
       edges: []

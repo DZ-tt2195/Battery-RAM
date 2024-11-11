@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 40284e96d098040618f883cc51e8c545
+guid: 1ed9ebde0a7ed44e79da212654c21162
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5208836186846741437
-    second: ScroungingRobot_0
+      213: -2822253596473453298
+    second: RobotCourier_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ScroungingRobot_0
+      name: RobotCourier_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: db343321ae0894840800000000000000
-      internalID: 5208836186846741437
+      spriteID: e0591249e4755d8d0800000000000000
+      internalID: -2822253596473453298
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      RobotCourier_0: -2822253596473453298
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

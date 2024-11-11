@@ -23,6 +23,7 @@ public class Log : PhotonCompatible
     public List<LogText> undosInLog = new();
     public NextStep undoToThis;
     [SerializeField] Button undoButton;
+    bool currentUndoState = false;
 
     protected override void Awake()
     {
@@ -37,7 +38,7 @@ public class Log : PhotonCompatible
         startingPosition = RT.transform.localPosition;
 
         undoButton = GameObject.Find("Undo Button").GetComponent<Button>();
-        undoButton.onClick.AddListener(() => DisplayUndoBar(true));
+        undoButton.onClick.AddListener(() => DisplayUndoBar(!currentUndoState));
     }
 
     #endregion
@@ -140,6 +141,7 @@ public class Log : PhotonCompatible
 
     public void DisplayUndoBar(bool flash)
     {
+        currentUndoState = flash;
         for (int i = 0; i < undosInLog.Count; i++)
         {
             LogText next = undosInLog[i];
@@ -166,6 +168,7 @@ public class Log : PhotonCompatible
         Player player = Manager.instance.FindThisPlayer();
         //Debug.Log($"{player.historyStack.IndexOf(toThisPoint)} - {toThisPoint.action}");
         undoToThis = null;
+        DisplayUndoBar(false);
         player.UndoAmount(toThisPoint);
     }
 

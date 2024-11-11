@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 852ba361af0f24904b7770f0bc44fe77
+guid: 6536527abc2244c8b8626d92537b158d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8058872157353338222
-    second: RobotExorcist_0
+      213: -6471007354859084509
+    second: CookingRobot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RobotExorcist_0
+      name: CookingRobot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 29a1baa7872292090800000000000000
-      internalID: -8058872157353338222
+      spriteID: 3252faa781d5236a0800000000000000
+      internalID: -6471007354859084509
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      CookingRobot_0: -6471007354859084509
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

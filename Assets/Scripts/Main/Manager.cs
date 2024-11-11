@@ -82,6 +82,9 @@ public class Manager : PhotonCompatible
     private void Start()
     {
         MakeObject(CarryVariables.instance.playerPrefab.gameObject);
+        eventPopup = Instantiate(CarryVariables.instance.cardPopup);
+        eventPopup.StatsSetup(null, "", false, new(1000, 600));
+        eventPopup.gameObject.SetActive(false);
 
         if (PhotonNetwork.IsMasterClient)
         {
@@ -139,6 +142,7 @@ public class Manager : PhotonCompatible
     void ReadySetup()
     {
         playerDeck.Shuffle();
+        eventDeck.Shuffle();
         storePlayers.Shuffle();
         for (int i = 0; i < storePlayers.childCount; i++)
         {

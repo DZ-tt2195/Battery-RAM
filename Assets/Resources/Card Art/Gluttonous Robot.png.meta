@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d28d11b3602c4494a90c4433bc618f7e
+guid: 39563ca74a8024bbd8a03855c8654a16
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2802547853955106488
-    second: RobotInvestor_0
+      213: -1489929888717613547
+    second: GluttonousRobot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RobotInvestor_0
+      name: GluttonousRobot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 849f8fa43995b19d0800000000000000
-      internalID: -2802547853955106488
+      spriteID: 516dfb209a4b25be0800000000000000
+      internalID: -1489929888717613547
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      GluttonousRobot_0: -1489929888717613547
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

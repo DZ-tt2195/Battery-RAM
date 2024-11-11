@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: eebe885fab1f14af5a429f278af4f057
+guid: 0651a118a29ea439c9fd0914134b10b8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4433457808989764977
-    second: RobotPerformers_0
+      213: 8205713943362347800
+    second: CleaningRobot_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RobotPerformers_0
+      name: CleaningRobot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f82cb78bc913972c0800000000000000
-      internalID: -4433457808989764977
+      spriteID: 81325921b5d80e170800000000000000
+      internalID: 8205713943362347800
       vertices: []
       indices: 
       edges: []
@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      CleaningRobot_0: 8205713943362347800
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

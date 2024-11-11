@@ -81,7 +81,7 @@ public class Player : PhotonCompatible
 
         resignButton = GameObject.Find("Resign Button").GetComponent<Button>();
         keepHand = transform.Find("Keep Hand");
-        keepHand = transform.Find("Keep Play");
+        keepPlay = transform.Find("Keep Play");
         myEvents = new();
     }
 
@@ -111,7 +111,7 @@ public class Player : PhotonCompatible
 
         resourceDictionary = new()
         {
-            { Resource.Coin, 4 },
+            { Resource.Coin, 20 },
             { Resource.Crown, 0 },
         };
 
@@ -191,7 +191,7 @@ public class Player : PhotonCompatible
     {
         resourceText.text = KeywordTooltip.instance.EditText($"{this.name}: " +
             $"{resourceDictionary[Resource.Coin]} Coin, " +
-            $"{resourceDictionary[Resource.Crown]} Food, " +
+            $"{resourceDictionary[Resource.Crown]} Food" +
             $" | " +
             $"Total Crown: {CalculateScore()}");
     }
@@ -403,16 +403,16 @@ public class Player : PhotonCompatible
         float midPoint = (start + end) / 2;
         int maxFit = (int)((Mathf.Abs(start) + Mathf.Abs(end)) / gap);
 
-        for (int i = 0; i < cardsInHand.Count; i++)
+        for (int i = 0; i < cardsInPlay.Count; i++)
         {
-            Card nextCard = cardsInHand[i];
+            Card nextCard = cardsInPlay[i];
 
-            nextCard.transform.SetParent(keepHand);
+            nextCard.transform.SetParent(keepPlay);
             nextCard.transform.SetSiblingIndex(i);
 
-            float offByOne = cardsInHand.Count - 1;
-            float startingX = (cardsInHand.Count <= maxFit) ? midPoint - (gap * (offByOne / 2f)) : (start);
-            float difference = (cardsInHand.Count <= maxFit) ? gap : gap * (maxFit / offByOne);
+            float offByOne = cardsInPlay.Count - 1;
+            float startingX = (cardsInPlay.Count <= maxFit) ? midPoint - (gap * (offByOne / 2f)) : (start);
+            float difference = (cardsInPlay.Count <= maxFit) ? gap : gap * (maxFit / offByOne);
 
             Vector2 newPosition = new(startingX + difference * i, 0);
             StartCoroutine(nextCard.MoveCard(newPosition, 0.25f, Vector3.one));
@@ -507,7 +507,9 @@ public class Player : PhotonCompatible
         foreach (PlayerCard card in cardsInPlay)
         {
             if (!resolvedCards.Contains(card) && card.batteryHere > 0)
+            {
                 canResolve.Add(card);
+            }
         }
         if (canResolve.Count == 0)
         {
@@ -521,7 +523,7 @@ public class Player : PhotonCompatible
             void Resolve()
             {
                 PlayerCard toResolve = (PlayerCard)chosenCard;
-                AddToStack(() => RememberStep(this, StepType.Revert, () => ResolveCard(false, toResolve)), true);
+                RememberStep(this, StepType.Revert, () => ResolveCard(false, toResolve));
             }
         }
     }
@@ -764,6 +766,7 @@ public class Player : PhotonCompatible
         currentStep = -1;
         historyStack.Clear();
         Log.instance.undosInLog.Clear();
+        Log.instance.DisplayUndoBar(false);
     }
 
     internal void UndoAmount(NextStep toThisPoint)

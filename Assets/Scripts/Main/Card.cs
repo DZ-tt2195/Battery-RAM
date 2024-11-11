@@ -216,7 +216,7 @@ public class Card : PhotonCompatible
 
     List<PlayerCard> canPlay;
 
-    protected void PlayCard(Player player, CardData dataFile, int logged)
+    protected virtual void PlayCard(Player player, CardData dataFile, int logged)
     {
         canPlay = player.cardsInHand.Where(card => card.CanPayCost(player)).ToList();
 
@@ -239,7 +239,7 @@ public class Card : PhotonCompatible
             }
             else
             {
-                player.PreserveTextRPC($"{player.name} doesn't play anything.", logged);
+                player.PreserveTextRPC($"{player.name} doesn't play anything with {this.name}.", logged);
             }
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
         }
