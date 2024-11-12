@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class Capital : EventCard
@@ -8,6 +9,7 @@ public class Capital : EventCard
         this.bottomType = this.GetType();
     }
 
+    [PunRPC]
     protected override void ResolveEvent(int playerPosition, int logged)
     {
         base.ResolveEvent(playerPosition, logged);

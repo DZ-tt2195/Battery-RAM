@@ -187,10 +187,12 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void DrawEventCards(int number, int logged)
     {
-        for (int i = 0; i < number; i++)
+        int counter = 0;
+        while (counter < number)
         {
-            Card card = Manager.instance.eventDeck.GetChild(i).GetComponent<Card>();
+            Card card = Manager.instance.eventDeck.GetChild(0).GetComponent<Card>();
             DoFunction(() => SendEventCardToAsker(card.pv.ViewID, logged), this.realTimePlayer);
+            counter++;
         }
     }
 
@@ -287,12 +289,14 @@ public class Player : PhotonCompatible
 #region Cards In Hand
 
     [PunRPC]
-    internal void DrawPlayerCards(int cardsToDraw, int logged)
+    internal void DrawPlayerCards(int number, int logged)
     {
-        for (int i = 0; i < cardsToDraw; i++)
+        int counter = 0;
+        while (counter < number)
         {
-            Card card = Manager.instance.playerDeck.GetChild(i).GetComponent<Card>();
+            Card card = Manager.instance.playerDeck.GetChild(0).GetComponent<Card>();
             DoFunction(() => SendPlayerCardToAsker(card.pv.ViewID, logged), this.realTimePlayer);
+            counter++;
         }
     }
 
@@ -411,7 +415,7 @@ public class Player : PhotonCompatible
                 this.ResourceRPC(Resource.Coin, -1 * coinCost, logged);
         }
         RememberStep(this, StepType.Share, () => AddToPlay(false, card.pv.ViewID, logged));
-        card.BatteryRPC(this, data.startingBattery, -1);
+        card.BatteryRPC(this, data.startingBattery, logged);
     }
 
     [PunRPC]
@@ -581,8 +585,8 @@ public class Player : PhotonCompatible
             resolvedCards.Add(card);
             AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
 
-            card.BatteryRPC(this, -1, 0);
             PreserveTextRPC($"{this.name} resolves {card.name}.", 0);
+            card.BatteryRPC(this, -1, 0);
             card.ActivateThis(this, 1);
         }
     }

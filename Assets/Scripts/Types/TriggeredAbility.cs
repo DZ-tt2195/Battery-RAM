@@ -93,3 +93,16 @@ public class ChangeCoinCost : TriggeredAbility
         return (PlayerCard)parameters[0];
     }
 }
+
+public class CanAddBattery : TriggeredAbility
+{
+    public CanAddBattery(PhotonCompatible source, Func<int, object[], bool> boolAbility, Func<string, object[], bool> condition = null) : base(source, boolAbility, condition)
+    {
+        comparison = nameof(CanAddBattery);
+    }
+
+    public static object[] CheckParameters()
+    {
+        return new object[0];
+    }
+}

@@ -57,12 +57,19 @@ public class PlayerCard : Card
 
     public void BatteryRPC(Player player, int number, int logged, string source = "")
     {
-        int actualAmount = number;
-        if (batteryHere + number < 0)
-            actualAmount = -1 * batteryHere;
-        if (actualAmount != 0)
-            player.RememberStep(this, StepType.Share, () => this.ChangeBattery(false, player.playerPosition, actualAmount, source, logged));
-        UpdateBatteryText();
+        if (number > 0 && player.BoolFromAbilities(false, nameof(CanAddBattery), CanAddBattery.CheckParameters(), logged))
+        {
+            return;
+        }
+        else
+        {
+            int actualAmount = number;
+            if (batteryHere + number < 0)
+                actualAmount = -1 * batteryHere;
+            if (actualAmount != 0)
+                player.RememberStep(this, StepType.Share, () => this.ChangeBattery(false, player.playerPosition, actualAmount, source, logged));
+            UpdateBatteryText();
+        }
     }
 
     [PunRPC]

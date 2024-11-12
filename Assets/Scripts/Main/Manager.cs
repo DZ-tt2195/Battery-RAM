@@ -144,6 +144,7 @@ public class Manager : PhotonCompatible
         playerDeck.Shuffle();
         eventDeck.Shuffle();
         storePlayers.Shuffle();
+
         for (int i = 0; i < storePlayers.childCount; i++)
         {
             Player player = storePlayers.transform.GetChild(i).GetComponent<Player>();
@@ -224,9 +225,9 @@ public class Manager : PhotonCompatible
 
 #region Gameplay Loop
 
-    void AddStep(Action action, int position = -1)
+    public void AddStep(Action action, int position = -1)
     {
-        if (!PhotonNetwork.IsConnected || PhotonNetwork.IsMasterClient)
+        if (AmMaster())
         {
             if (position < 0 || currentStep < 0)
                 actionStack.Add(action);
@@ -236,15 +237,15 @@ public class Manager : PhotonCompatible
     }
 
     [PunRPC]
-    public void Instructions(string text)
+    internal void Instructions(string text)
     {
         instructions.text = (text);
     }
 
     [PunRPC]
-    public void Continue()
+    internal void Continue()
     {
-        if (!PhotonNetwork.IsConnected || PhotonNetwork.IsMasterClient)
+        if (AmMaster())
         {
             Invoke(nameof(NextAction), 0.25f);
         }

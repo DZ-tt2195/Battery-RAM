@@ -378,14 +378,21 @@ public class Card : PhotonCompatible
 
     #endregion
 
-    #region Food
+    #region Battery
 
     protected void AddBattery(Player player, CardData dataFile, int logged)
     {
-        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
-
-        player.RememberStep(this, (player.cardsInPlay.Count <= 1) ? StepType.None : StepType.UndoPoint,
-            () => ChooseAddBattery(player, dataFile, 1, logged));
+        if (player.BoolFromAbilities(false, nameof(CanAddBattery), CanAddBattery.CheckParameters(), logged))
+        {
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        }
+        else
+        {
+            player.AddToStack(() => player.RememberStep(this, StepType.Revert,
+                () => Advance(false, player, dataFile, logged)), true);
+            player.RememberStep(this, (player.cardsInPlay.Count <= 1) ? StepType.None : StepType.UndoPoint,
+                () => ChooseAddBattery(player, dataFile, 1, logged));
+        }
     }
 
     void ChooseAddBattery(Player player, CardData dataFile, int counter, int logged)
@@ -440,12 +447,12 @@ public class Card : PhotonCompatible
         }
     }
 
-    void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int counter, int logged)
+    protected void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int counter, int logged)
     {
         sideCounter = counter;
         string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({counter}/{dataFile.batteryAmount})";
         if (optional)
-            player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
+            player.ChooseButton(new() { "Decline" }, new(0, -250), "", null);
         player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Remove a Battery{parathentical}.", Next);
 
         void Next()

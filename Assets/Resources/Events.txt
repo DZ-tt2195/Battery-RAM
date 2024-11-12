@@ -21,7 +21,31 @@
       "",
       "",
       "0",
-      "\"\""
+      "Marco Promo/Dominion: Empires"
+    ],
+    [
+      "Power Outage",
+      "You can't add Battery this turn (even when playing a card).",
+      "FALSE",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Marcel-André Casasola Merkle/Dominion: Nocturne/(Ghost Town)"
+    ],
+    [
+      "Tournament",
+      "Players pay any amount of Coin (at once). Whoever paid the most gets +1 Crown, the least gets -1 Crown.",
+      "FALSE",
+      "LoseCoin/AddCrown/LoseCrown",
+      "",
+      "",
+      "1",
+      "",
+      "",
+      "Michael Watson/Dominion: Cornucopia and Guilds/(Joust)"
     ]
   ]
 }
