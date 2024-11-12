@@ -111,7 +111,7 @@ public class Player : PhotonCompatible
 
         resourceDictionary = new()
         {
-            { Resource.Coin, 20 },
+            { Resource.Coin, 4 },
             { Resource.Crown, 0 },
         };
 
@@ -180,7 +180,7 @@ public class Player : PhotonCompatible
         UpdateResourceText();
     }
 
-    #endregion
+#endregion
 
 #region Events
 
@@ -308,6 +308,7 @@ public class Player : PhotonCompatible
         if (undo)
         {
             DoFunction(() => ReturnPlayerCardToDeck(PV), RpcTarget.MasterClient);
+            SortHand();
         }
         else
         {
@@ -318,9 +319,7 @@ public class Player : PhotonCompatible
                 Log.instance.AddText($"{this.name} draws {card.name}.", logged);
             else
                 Log.instance.AddText($"{this.name} draws 1 Card.", logged);
-
         }
-        SortHand();
     }
 
     void PutInHand(PlayerCard card)
@@ -329,16 +328,6 @@ public class Player : PhotonCompatible
         card.transform.localPosition = new Vector2(0, -1100);
         card.cg.alpha = 0;
         SortHand();
-    }
-
-    [PunRPC]
-    void ReturnPlayerCardToDeck(int PV)
-    {
-        PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
-        cardsInHand.Remove(card);
-        card.transform.SetParent(Manager.instance.playerDeck);
-        card.transform.SetAsFirstSibling();
-        card.transform.localPosition = new(0, 10000);
     }
 
     public void SortHand()
@@ -369,7 +358,22 @@ public class Player : PhotonCompatible
     }
 
     [PunRPC]
-    public void DiscardFromHand(bool undo, int PV, int logged)
+    void ReturnPlayerCardToDeck(int PV)
+    {
+        PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
+        cardsInHand.Remove(card);
+        card.transform.SetParent(Manager.instance.playerDeck);
+        card.transform.SetAsFirstSibling();
+        card.transform.localPosition = new(0, 10000);
+    }
+
+    public void DiscardPlayerCard(PlayerCard card, int logged)
+    {
+        RememberStep(this, StepType.Share, () => DiscardFromHand(false, card.pv.ViewID, logged));
+    }
+
+    [PunRPC]
+    void DiscardFromHand(bool undo, int PV, int logged)
     {
         PlayerCard card = PhotonView.Find(PV).GetComponent<PlayerCard>();
 
@@ -846,6 +850,7 @@ public class Player : PhotonCompatible
             if (next == toThisPoint || currentStep == 0)
             {
                 this.SortHand();
+                this.SortPlay();
                 historyStack.RemoveAt(currentStep);
                 currentStep--;
                 RememberStep(this, StepType.UndoPoint, toThisPoint.action);
@@ -899,7 +904,12 @@ public class Player : PhotonCompatible
         return validAbilities;
     }
 
-    public void AddAbility(bool undo, TriggeredAbility ability)
+    public void NewAbility(TriggeredAbility ability)
+    {
+        this.RememberStep(this, StepType.Revert, () => AbilityAdded(false, ability));
+    }
+
+    void AbilityAdded(bool undo, TriggeredAbility ability)
     {
         if (undo)
             allAbilities.Remove(ability);
@@ -907,7 +917,12 @@ public class Player : PhotonCompatible
             allAbilities.Add(ability);
     }
 
-    public void DropAbility(bool undo, TriggeredAbility ability)
+    public void AbilityExpired(TriggeredAbility ability)
+    {
+        this.RememberStep(this, StepType.Revert, () => AbilityDropped(false, ability));
+    }
+
+    void AbilityDropped(bool undo, TriggeredAbility ability)
     {
         if (undo)
             allAbilities.Add(ability);

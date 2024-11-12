@@ -359,7 +359,7 @@ public class Card : PhotonCompatible
             {
                 sideCounter++;
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
-                player.RememberStep(player, StepType.UndoPoint, () => player.DiscardFromHand(false, playerCard.pv.ViewID, logged));
+                player.DiscardPlayerCard(playerCard, logged);
 
                 if (counter == dataFile.cardAmount)
                     player.PopStack();

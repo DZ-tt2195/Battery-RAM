@@ -23,7 +23,7 @@ public class EventCard : Card
         return dataFile;
     }
 
-    public virtual void ActivateThis(int logged)
+    public void ActivateThis(int logged)
     {
         foreach (Player player in Manager.instance.playersInOrder)
             DoFunction(() => ResolveEvent(player.playerPosition, logged), player.realTimePlayer);
