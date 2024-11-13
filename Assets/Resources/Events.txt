@@ -46,6 +46,18 @@
       "",
       "",
       "Michael Watson/Dominion: Cornucopia and Guilds/(Joust)"
+    ],
+    [
+      "Bartering",
+      "You may discard 3 Card for +3 Battery.",
+      "TRUE",
+      "AskDiscard/AddBattery",
+      "3",
+      "",
+      "",
+      "3",
+      "",
+      "Franz Vohwinkel/Dominion: Allies/(Swap)"
     ]
   ]
 }

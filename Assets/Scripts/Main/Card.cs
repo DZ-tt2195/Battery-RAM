@@ -322,6 +322,7 @@ public class Card : PhotonCompatible
             else
             {
                 player.PreserveTextRPC($"{player.name} doesn't play anything with {this.name}.", logged);
+                PostPlaying(player, null, dataFile, logged);
             }
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
         }
@@ -372,38 +373,37 @@ public class Card : PhotonCompatible
         {
             if (player.chosenCard != null)
             {
-                sideCounter++;
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 player.DiscardPlayerCard(playerCard, logged);
 
                 if (counter == dataFile.cardAmount)
                 {
-                    PostDiscarding(player, dataFile, logged);
+                    PostDiscarding(player, true, dataFile, logged);
                     player.PopStack();
                 }
                 else
                 {
                     player.RememberStep(this, (player.cardsInHand.Count == 1) ? StepType.None : StepType.UndoPoint,
-                        () => ChooseDiscard(player, dataFile, false, sideCounter, logged));
+                        () => ChooseDiscard(player, dataFile, false, sideCounter+1, logged));
                 }
             }
             else
             {
                 if (optional)
                     player.PreserveTextRPC($"{player.name} doesn't discard to {this.name}.", logged);
+                PostDiscarding(player, false, dataFile, logged);
                 player.PopStack();
             }
         }
     }
 
-    protected virtual void PostDiscarding(Player player, CardData dataFile, int logged)
+    protected virtual void PostDiscarding(Player player, bool success, CardData dataFile, int logged)
     {
     }
 
-
     #endregion
 
-    #region Battery
+    #region Add Battery
 
     protected void AddBattery(Player player, CardData dataFile, int logged)
     {
@@ -430,7 +430,6 @@ public class Card : PhotonCompatible
         {
             if (player.chosenCard != null)
             {
-                sideCounter++;
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 playerCard.BatteryRPC(player, 1, logged, this.name);
 
@@ -441,7 +440,7 @@ public class Card : PhotonCompatible
                 }
                 else
                 {
-                    player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter, logged));
+                    player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter+1, logged));
                 }
             }
             else
@@ -455,6 +454,10 @@ public class Card : PhotonCompatible
     protected virtual void PostAddBattery(Player player, CardData dataFile, int logged)
     {
     }
+
+    #endregion
+
+    #region Lose Battery
 
     protected void LoseBattery(Player player, CardData dataFile, int logged)
     {
@@ -493,30 +496,30 @@ public class Card : PhotonCompatible
         {
             if (player.chosenCard != null)
             {
-                sideCounter++;
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 playerCard.BatteryRPC(player, -1, logged, this.name);
 
                 if (counter == dataFile.batteryAmount)
                 {
-                    PostLoseBattery(player, dataFile, logged);
+                    PostLoseBattery(player, true, dataFile, logged);
                     player.PopStack();
                 }
                 else
                 {
                     player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
-                        () => ChooseLoseBattery(player, dataFile, false, sideCounter, logged));
+                        () => ChooseLoseBattery(player, dataFile, false, sideCounter+1, logged));
                 }
             }
             else
             {
                 player.PreserveTextRPC($"{player.name} doesn't remove any Battery.", logged);
+                PostLoseBattery(player, false, dataFile, logged);
                 player.PopStack();
             }
         }
     }
 
-    protected virtual void PostLoseBattery(Player player, CardData dataFile, int logged)
+    protected virtual void PostLoseBattery(Player player, bool success, CardData dataFile, int logged)
     {
     }
 

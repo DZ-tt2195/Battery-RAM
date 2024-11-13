@@ -25,7 +25,8 @@ public class RobotShopkeeper : PlayerCard
 
     protected override void PostPlaying(Player player, PlayerCard cardToPlay, CardData dataFile, int logged)
     {
-        cardToPlay.BatteryRPC(player, -1 * cardToPlay.batteryHere, logged, this.name);
+        if (cardToPlay != null)
+            cardToPlay.BatteryRPC(player, -1 * cardToPlay.batteryHere, logged, this.name);
         player.PopStack();
     }
 }
