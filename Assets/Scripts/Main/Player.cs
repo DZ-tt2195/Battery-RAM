@@ -491,7 +491,7 @@ public class Player : PhotonCompatible
             EventCard chosenEvent = myEvents[choice];
             PreserveTextRPC($"{this.name} reveals {chosenEvent.name}.", 0);
 
-            Manager.instance.DoFunction(() => Manager.instance.NewEvent(chosenEvent.pv.ViewID), RpcTarget.MasterClient);
+            Manager.instance.DoFunction(() => Manager.instance.CreateEventPopup(chosenEvent.pv.ViewID), RpcTarget.All);
             RememberStep(this, StepType.Share, () => RevealEvent(false, chosenEvent.pv.ViewID));
             RememberStep(this, StepType.UndoPoint, () => EndTurn());
         }
@@ -650,7 +650,7 @@ public class Player : PhotonCompatible
             Manager.instance.Instructions(changeInstructions);
 
         if (listOfCards.Count == 0 && action != null)
-            PopStack();
+            DecisionMade(-1);
         else if (listOfCards.Count == 1 && action != null)
             DecisionMade(0, listOfCards[0]);
         else
@@ -703,13 +703,16 @@ public class Player : PhotonCompatible
 
     #region Resolve Decision
 
-    public void PopStack()
+    public void PopStack(int iteration = 1)
     {
-        List<Action> toDo = decisionReact.Pop();
-        for (int i = 0; i < toDo.Count; i++)
+        for (int i = 0; i < iteration; i++)
         {
-            Action next = toDo[i];
-            RememberStep(this, StepType.Revert, () => ResolveEffects(false, next, i == 0));
+            List<Action> toDo = decisionReact.Pop();
+            for (int j = 0; j < toDo.Count; j++)
+            {
+                Action next = toDo[j];
+                RememberStep(this, StepType.Revert, () => ResolveEffects(false, next, j == 0));
+            }
         }
     }
 
@@ -900,10 +903,14 @@ public class Player : PhotonCompatible
     {
         List<TriggeredAbility> validAbilities = new();
         this.allAbilities.RemoveAll(ability => ability == null);
-        foreach (TriggeredAbility ability in this.allAbilities)
+
+        for (int i = allAbilities.Count - 1; i >= 0; i--)
         {
+            TriggeredAbility ability = allAbilities[i];
             if (ability.CheckAbility(condition, array))
                 validAbilities.Add(ability);
+            if (condition == nameof(EndMyTurn))
+                allAbilities.Remove(ability);
         }
         return validAbilities;
     }

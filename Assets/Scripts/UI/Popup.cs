@@ -40,6 +40,7 @@ public class Popup : MonoBehaviour
         }
         else
         {
+            this.name = header;
             this.textbox.text = KeywordTooltip.instance.EditText(header);
         }
 

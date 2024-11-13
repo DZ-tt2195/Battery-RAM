@@ -212,41 +212,6 @@ public class Card : PhotonCompatible
 
     #endregion
 
-    #region Play
-
-    List<PlayerCard> canPlay;
-
-    protected void PlayCard(Player player, CardData dataFile, int logged)
-    {
-        canPlay = player.cardsInHand.Where(card => card.CanPayCost(player)).ToList();
-
-        if (canPlay.Count >= 1)
-            player.RememberStep(this, StepType.None, () => ChoosePlay(player, dataFile, logged));
-        else
-            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
-    }
-
-    void ChoosePlay(Player player, CardData dataFile, int logged)
-    {
-        player.ChooseCardOnScreen(canPlay.OfType<Card>().ToList(), $"Choose a card to play.", Next);
-
-        void Next()
-        {
-            if (player.chosenCard != null)
-            {
-                PlayerCard cardToPlay = (PlayerCard)player.chosenCard;
-                player.PlayCard(cardToPlay, true, logged);
-            }
-            else
-            {
-                player.PreserveTextRPC($"{player.name} doesn't play anything with {this.name}.", logged);
-            }
-            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
-        }
-    }
-
-    #endregion
-
     #region Setters
 
     protected void SetAllStats(int number, CardData dataFile)
@@ -318,6 +283,56 @@ public class Card : PhotonCompatible
 
     #endregion
 
+    #region Play
+
+    List<PlayerCard> canPlay;
+
+    protected bool CanPlayCards(Player player)
+    {
+        canPlay = player.cardsInHand.Where(card => card.CanPayCost(player)).ToList();
+        return canPlay.Count >= 1;
+    }
+
+    protected void PlayCard(Player player, CardData dataFile, int logged)
+    {
+        if (CanPlayCards(player))
+        {
+            player.RememberStep(this, StepType.UndoPoint, () => ChoosePlay(player, dataFile, logged));
+        }
+        else
+        {
+            player.PreserveTextRPC($"{player.name} can't play anything.", logged);
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        }
+    }
+
+    void ChoosePlay(Player player, CardData dataFile, int logged)
+    {
+        player.ChooseButton(new() { "Decline" }, new(0, 250), $"Choose a card to play.", Next);
+        player.ChooseCardOnScreen(canPlay.OfType<Card>().ToList(), "", null);
+
+        void Next()
+        {
+            if (player.chosenCard != null)
+            {
+                PlayerCard cardToPlay = (PlayerCard)player.chosenCard;
+                player.PlayCard(cardToPlay, true, logged);
+                PostPlaying(player, cardToPlay, dataFile, logged);
+            }
+            else
+            {
+                player.PreserveTextRPC($"{player.name} doesn't play anything with {this.name}.", logged);
+            }
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        }
+    }
+
+    protected virtual void PostPlaying(Player player, PlayerCard cardToPlay, CardData dataFile, int logged)
+    {
+    }
+
+    #endregion
+
     #region Discard
 
     protected void DiscardCard(Player player, CardData dataFile, int logged)
@@ -362,10 +377,15 @@ public class Card : PhotonCompatible
                 player.DiscardPlayerCard(playerCard, logged);
 
                 if (counter == dataFile.cardAmount)
+                {
+                    PostDiscarding(player, dataFile, logged);
                     player.PopStack();
+                }
                 else
+                {
                     player.RememberStep(this, (player.cardsInHand.Count == 1) ? StepType.None : StepType.UndoPoint,
                         () => ChooseDiscard(player, dataFile, false, sideCounter, logged));
+                }
             }
             else
             {
@@ -375,6 +395,11 @@ public class Card : PhotonCompatible
             }
         }
     }
+
+    protected virtual void PostDiscarding(Player player, CardData dataFile, int logged)
+    {
+    }
+
 
     #endregion
 
@@ -410,9 +435,14 @@ public class Card : PhotonCompatible
                 playerCard.BatteryRPC(player, 1, logged, this.name);
 
                 if (counter == dataFile.batteryAmount)
+                {
+                    PostAddBattery(player, dataFile, logged);
                     player.PopStack();
+                }
                 else
+                {
                     player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter, logged));
+                }
             }
             else
             {
@@ -420,6 +450,10 @@ public class Card : PhotonCompatible
                 player.PopStack();
             }
         }
+    }
+
+    protected virtual void PostAddBattery(Player player, CardData dataFile, int logged)
+    {
     }
 
     protected void LoseBattery(Player player, CardData dataFile, int logged)
@@ -464,10 +498,15 @@ public class Card : PhotonCompatible
                 playerCard.BatteryRPC(player, -1, logged, this.name);
 
                 if (counter == dataFile.batteryAmount)
+                {
+                    PostLoseBattery(player, dataFile, logged);
                     player.PopStack();
+                }
                 else
+                {
                     player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
                         () => ChooseLoseBattery(player, dataFile, false, sideCounter, logged));
+                }
             }
             else
             {
@@ -475,6 +514,10 @@ public class Card : PhotonCompatible
                 player.PopStack();
             }
         }
+    }
+
+    protected virtual void PostLoseBattery(Player player, CardData dataFile, int logged)
+    {
     }
 
     #endregion

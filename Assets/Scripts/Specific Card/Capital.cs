@@ -17,7 +17,7 @@ public class Capital : EventCard
         CardData dataFile = GetFile();
 
         AddCoin(player, dataFile, logged);
-        EndMyTurn ability = null; ability = new(this, LoseMoney);
+        EndMyTurn ability = null; ability = new(this, true, LoseMoney);
         player.NewAbility(ability);
 
         player.PopStack();
@@ -26,7 +26,6 @@ public class Capital : EventCard
         {
             for (int i = 0; i<2; i++)
                 LoseCoin(player, dataFile, logged);
-            player.AbilityExpired(ability);
         }
     }
 }

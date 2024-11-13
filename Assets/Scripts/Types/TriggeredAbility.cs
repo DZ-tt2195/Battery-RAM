@@ -6,28 +6,32 @@ public class TriggeredAbility
     public PhotonCompatible source { get; protected set; }
     protected string comparison;
     protected Func<string, object[], bool> CanBeTriggered;
+    public bool justThisTurn;
 
     protected Action<int, object[]> WhenTriggered;
     protected Func<int, object[], int> GetNumber;
     protected Func<int, object[], bool> GetBool;
 
-    protected TriggeredAbility(PhotonCompatible source, Action<int, object[]> voidAbility, Func<string, object[], bool> condition = null)
+    protected TriggeredAbility(PhotonCompatible source, Action<int, object[]> voidAbility, bool justThisTurn, Func<string, object[], bool> condition = null)
     {
         this.source = source;
+        this.justThisTurn = justThisTurn;
         CanBeTriggered = condition;
         WhenTriggered = voidAbility;
     }
 
-    protected TriggeredAbility(PhotonCompatible source, Func<int, object[], int> numberAbility, Func<string, object[], bool> condition = null)
+    protected TriggeredAbility(PhotonCompatible source, Func<int, object[], int> numberAbility, bool justThisTurn, Func<string, object[], bool> condition = null)
     {
         this.source = source;
+        this.justThisTurn = justThisTurn;
         CanBeTriggered = condition;
         GetNumber = numberAbility;
     }
 
-    protected TriggeredAbility(PhotonCompatible source, Func<int, object[], bool> boolAbility, Func<string, object[], bool> condition = null)
+    protected TriggeredAbility(PhotonCompatible source, Func<int, object[], bool> boolAbility, bool justThisTurn, Func<string, object[], bool> condition = null)
     {
         this.source = source;
+        this.justThisTurn = justThisTurn;
         CanBeTriggered = condition;
         GetBool = boolAbility;
     }
@@ -65,7 +69,7 @@ public class TriggeredAbility
 
 public class EndMyTurn : TriggeredAbility
 {
-    public EndMyTurn(PhotonCompatible source, Action<int, object[]> ability, Func<string, object[], bool> condition = null) : base(source, ability, condition)
+    public EndMyTurn(PhotonCompatible source, bool justThisTurn, Action<int, object[]> ability, Func<string, object[], bool> condition = null) : base(source, ability, justThisTurn, condition)
     {
         comparison = nameof(EndMyTurn);
     }
@@ -78,7 +82,7 @@ public class EndMyTurn : TriggeredAbility
 
 public class ChangeCoinCost : TriggeredAbility
 {
-    public ChangeCoinCost(PhotonCompatible source, Func<int, object[], int> numberAbility, Func<string, object[], bool> condition = null) : base(source, numberAbility, condition)
+    public ChangeCoinCost(PhotonCompatible source, bool justThisTurn, Func<int, object[], int> numberAbility, Func<string, object[], bool> condition = null) : base(source, numberAbility, justThisTurn, condition)
     {
         comparison = nameof(ChangeCoinCost);
     }
@@ -96,7 +100,7 @@ public class ChangeCoinCost : TriggeredAbility
 
 public class CanAddBattery : TriggeredAbility
 {
-    public CanAddBattery(PhotonCompatible source, Func<int, object[], bool> boolAbility, Func<string, object[], bool> condition = null) : base(source, boolAbility, condition)
+    public CanAddBattery(PhotonCompatible source, bool justThisTurn, Func<int, object[], bool> boolAbility, Func<string, object[], bool> condition = null) : base(source, boolAbility, justThisTurn, condition)
     {
         comparison = nameof(CanAddBattery);
     }

@@ -239,7 +239,7 @@ public class Manager : PhotonCompatible
     [PunRPC]
     internal void Instructions(string text)
     {
-        instructions.text = (text);
+        instructions.text = KeywordTooltip.instance.EditText(text);
     }
 
     [PunRPC]
@@ -291,13 +291,13 @@ public class Manager : PhotonCompatible
             Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber}", 0));
 
             waitingOnPlayers = 1;
+            DoFunction(() => CreateEventPopup(-1));
             player.DoFunction(() => player.StartChooseEvent(), player.realTimePlayer);
         }
 
         void ResolveEvent()
         {
             waitingOnPlayers = playersInOrder.Count;
-            DoFunction(() => CreateEventPopup(nextEvent.pv.ViewID));
             nextEvent.ActivateThis(0);
         }
 
@@ -310,20 +310,21 @@ public class Manager : PhotonCompatible
     }
 
     [PunRPC]
-    internal void NewEvent(int PV)
+    internal void CreateEventPopup(int PV)
     {
-        nextEvent = PhotonView.Find(PV).GetComponent<EventCard>();
-    }
+        if (PV < 0)
+        {
+            eventPopup.gameObject.SetActive(false);
+        }
+        else
+        {
+            nextEvent = PhotonView.Find(PV).GetComponent<EventCard>();
+            eventPopup.gameObject.SetActive(true);
 
-    [PunRPC]
-    void CreateEventPopup(int PV)
-    {
-        nextEvent = PhotonView.Find(PV).GetComponent<EventCard>();
-        eventPopup.gameObject.SetActive(true);
-
-        eventPopup.RemoveButton(0);
-        eventPopup.AddCardButton(nextEvent, 1);
-        eventPopup.DisableButton(0);
+            eventPopup.RemoveButton(0);
+            eventPopup.AddCardButton(nextEvent, 1);
+            eventPopup.DisableButton(0);
+        }
     }
 
     [PunRPC]

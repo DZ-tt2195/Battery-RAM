@@ -82,13 +82,13 @@ public class PlayerCard : Card
         }
         else
         {
-            string parathentical = source == "" ? "" : $"({source})";
+            string parathentical = source == "" ? "" : $" ({source})";
             batteryHere += amount;
 
             if (amount >= 0)
-                Log.instance.AddText($"{player.name} adds {Mathf.Abs(amount)} Battery to {this.name} {parathentical}.", logged);
+                Log.instance.AddText($"{player.name} adds {Mathf.Abs(amount)} Battery to {this.name}{parathentical}.", logged);
             else
-                Log.instance.AddText($"{player.name} removes {Mathf.Abs(amount)} Battery from {this.name} {parathentical}.", logged);
+                Log.instance.AddText($"{player.name} removes {Mathf.Abs(amount)} Battery from {this.name}{parathentical}.", logged);
         }
         UpdateBatteryText();
     }

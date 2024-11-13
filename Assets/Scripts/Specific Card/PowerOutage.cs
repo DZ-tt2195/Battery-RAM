@@ -15,16 +15,9 @@ public class PowerOutage : EventCard
         base.ResolveEvent(playerPosition, logged);
         Player player = Manager.instance.playersInOrder[playerPosition];
 
-        CanAddBattery ability = null; ability = new(this, NoBattery, ThisTurn);
+        CanAddBattery ability = null; ability = new(this, true, NoBattery);
         player.NewAbility(ability);
         player.PopStack();
-
-        bool ThisTurn(string condition, object[] parameters)
-        {
-            if (condition == nameof(EndMyTurn))
-                player.AbilityExpired(ability);
-            return condition == nameof(CanAddBattery);
-        }
 
         bool NoBattery(int myLogged, object[] parameters)
         {
