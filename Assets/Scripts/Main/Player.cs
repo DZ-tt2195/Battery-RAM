@@ -909,8 +909,8 @@ public class Player : PhotonCompatible
             TriggeredAbility ability = allAbilities[i];
             if (ability.CheckAbility(condition, array))
                 validAbilities.Add(ability);
-            if (condition == nameof(EndMyTurn))
-                allAbilities.Remove(ability);
+            if (condition == nameof(EndMyTurn) && ability.justThisTurn)
+                AbilityExpired(ability);
         }
         return validAbilities;
     }
