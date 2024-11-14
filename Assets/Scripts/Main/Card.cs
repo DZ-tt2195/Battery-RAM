@@ -168,6 +168,10 @@ public class Card : PhotonCompatible
                     player.PopStack();
             }
         }
+        else
+        {
+            player.PopStack();
+        }
     }
 
     protected void CheckBool(bool answer, Player player, CardData dataFile, int logged)
@@ -308,7 +312,7 @@ public class Card : PhotonCompatible
 
     void ChoosePlay(Player player, CardData dataFile, int logged)
     {
-        player.ChooseButton(new() { "Decline" }, new(0, 250), $"Choose a card to play.", Next);
+        player.ChooseButton(new() { "Decline" }, new(0, 250), $"Choose a card to play with {this.name}.", Next);
         player.ChooseCardOnScreen(canPlay.OfType<Card>().ToList(), "", null);
 
         void Next()
@@ -367,7 +371,7 @@ public class Card : PhotonCompatible
         string parathentical = (dataFile.cardAmount == 1) ? "" : $" ({counter}/{dataFile.cardAmount})";
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard a Card{parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard Card to {this.name}{parathentical}.", Next);
 
         void Next()
         {
@@ -490,7 +494,7 @@ public class Card : PhotonCompatible
         string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({counter}/{dataFile.batteryAmount})";
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, -250), "", null);
-        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Remove a Battery{parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInPlay.Where(card => card.batteryHere >= 1).OfType<Card>().ToList(), $"Lose a Battery to {this.name}{parathentical}.", Next);
 
         void Next()
         {

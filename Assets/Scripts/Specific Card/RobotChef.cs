@@ -44,7 +44,6 @@ public class RobotChef : PlayerCard
 
                 if (counter == dataFile.batteryAmount)
                 {
-                    PostAddBattery(player, dataFile, logged);
                     player.PopStack();
                 }
                 else

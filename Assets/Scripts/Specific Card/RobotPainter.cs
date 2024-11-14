@@ -28,21 +28,14 @@ public class RobotPainter : PlayerCard
             {
                 case 0:
                     DrawCard(player, dataFile, logged);
-                    player.PopStack();
                     break;
                 case 1:
                     AddCoin(player, dataFile, logged);
-                    player.PopStack();
                     break;
                 case 2:
                     AddBattery(player, dataFile, logged);
                     break;
             }
         }
-    }
-
-    protected override void PostAddBattery(Player player, CardData dataFile, int logged)
-    {
-        player.PopStack();
     }
 }

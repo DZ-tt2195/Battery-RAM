@@ -12,15 +12,7 @@ public class RobotShopkeeper : PlayerCard
 
     public override void ActivateThis(Player player, int logged)
     {
-        if (CanPlayCards(player))
-        {
-            PlayCard(player, GetFile(), logged);
-        }
-        else
-        {
-            player.PreserveTextRPC($"{player.name} can't play anything.", logged);
-            player.PopStack();
-        }
+        PlayCard(player, GetFile(), logged);
     }
 
     protected override void PostPlaying(Player player, PlayerCard cardToPlay, CardData dataFile, int logged)

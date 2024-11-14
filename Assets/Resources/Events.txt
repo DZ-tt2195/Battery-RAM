@@ -49,15 +49,27 @@
     ],
     [
       "Bartering",
-      "You may discard 3 Card for +3 Battery.",
+      "You may discard 2 Card for +4 Battery.",
       "TRUE",
       "AskDiscard/AddBattery",
-      "3",
+      "2",
       "",
       "",
-      "3",
+      "4",
       "",
       "Franz Vohwinkel/Dominion: Allies/(Swap)"
+    ],
+    [
+      "Good Harvest",
+      "Each time you play a Card this turn, +1 Card at end of turn.",
+      "FALSE",
+      "DrawCard",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Sai Beppu/Dominion: Rising Sun"
     ]
   ]
 }

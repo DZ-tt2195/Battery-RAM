@@ -16,11 +16,10 @@ public class Capital : EventCard
         Player player = Manager.instance.playersInOrder[playerPosition];
         CardData dataFile = GetFile();
 
-        AddCoin(player, dataFile, logged);
         EndMyTurn ability = null; ability = new(this, true, LoseMoney);
         player.NewAbility(ability);
 
-        player.PopStack();
+        AddCoin(player, dataFile, logged);
 
         void LoseMoney(int myLogged, object[] parameters)
         {

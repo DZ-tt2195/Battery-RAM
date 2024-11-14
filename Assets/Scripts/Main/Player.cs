@@ -59,8 +59,7 @@ public class Player : PhotonCompatible
 
     [Foldout("Undo", true)]
     [ReadOnly][SerializeField] int currentStep = -1;
-    [ReadOnly] public List<NextStep> historyStack = new();
-    public Dictionary<string, MethodInfo> dictionary = new();
+    [ReadOnly] List<NextStep> historyStack = new();
 
     [Foldout("Choices", true)]
     public int choice { get; private set; }
@@ -111,9 +110,10 @@ public class Player : PhotonCompatible
 
         resourceDictionary = new()
         {
-            { Resource.Coin, 4 },
+            { Resource.Coin, (Application.isEditor && PhotonNetwork.CurrentRoom.MaxPlayers == 1) ? 20 : 4 },
             { Resource.Crown, 0 },
         };
+        UpdateResourceText();
 
         if (InControl())
         {
@@ -342,11 +342,11 @@ public class Player : PhotonCompatible
 
         float midPoint = (start + end) / 2;
         int maxFit = (int)((Mathf.Abs(start) + Mathf.Abs(end)) / gap);
+        cardsInHand = cardsInHand.OrderBy(card => (card.GetFile() as PlayerCardData).coinCost).ToList();
 
         for (int i = 0; i < cardsInHand.Count; i++)
         {
             Card nextCard = cardsInHand[i];
-
             nextCard.transform.SetParent(keepHand);
             nextCard.transform.SetSiblingIndex(i);
 
@@ -538,11 +538,10 @@ public class Player : PhotonCompatible
 
         void Resolve()
         {
-            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
-            resolvedCards = new();
-
             ActionCard action = (ActionCard)chosenCard;
-            PreserveTextRPC($"{this.name} chooses {action.name}.", 0);
+            PreserveTextRPC($"{this.name} chooses to {action.name}.", 0);
+            resolvedCards = new();
+            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
             action.ActivateThis(this, 1);
         }
     }
@@ -707,6 +706,9 @@ public class Player : PhotonCompatible
     {
         for (int i = 0; i < iteration; i++)
         {
+            if (decisionReact.Count == 0)
+                break;
+
             List<Action> toDo = decisionReact.Pop();
             for (int j = 0; j < toDo.Count; j++)
             {
@@ -768,6 +770,20 @@ public class Player : PhotonCompatible
     #endregion
 
 #region Steps
+
+    public List<NextStep> SearchForSteps(string name)
+    {
+        List<NextStep> hasStepName = new();
+        foreach (NextStep step in historyStack)
+        {
+            if (step.action.Body is MethodCallExpression methodCall)
+            {
+                if (methodCall.Method.Name == name)
+                    hasStepName.Add(step);
+            }
+        }
+        return hasStepName;
+    }
 
     public void RememberStep(PhotonCompatible source, StepType type, Expression<Action> action)
     {

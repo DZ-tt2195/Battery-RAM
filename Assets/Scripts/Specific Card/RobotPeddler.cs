@@ -13,6 +13,5 @@ public class RobotPeddler : PlayerCard
     {
         player.ResourceRPC(Resource.Coin, -1 * player.cardsInHand.Count, logged);
         DrawCard(player, GetFile(), logged);
-        player.PopStack();
     }
 }

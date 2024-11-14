@@ -73,7 +73,7 @@ public class Log : PhotonCompatible
 
         newText.textBox.text = "";
         for (int i = 0; i < indent; i++)
-            newText.textBox.text += "     ";
+            newText.textBox.text += "    ";
 
         newText.textBox.text += string.IsNullOrEmpty(logText) ? "" : char.ToUpper(logText[0]) + logText[1..];
         newText.textBox.text = KeywordTooltip.instance.EditText(newText.textBox.text);

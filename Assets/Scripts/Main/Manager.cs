@@ -357,13 +357,13 @@ public class Manager : PhotonCompatible
         foreach (Popup popup in allPopups)
             Destroy(popup.gameObject);
 
-
         List<Player> playerScoresInOrder = playersInOrder.OrderByDescending(player => player.CalculateScore()).ToList();
         int nextPlacement = 1;
 
         Log.instance.AddText("");
         Log.instance.AddText("The game has ended.");
         Instructions("The game has ended.");
+        scoreText.text = "";
 
         Player resignPlayer = null;
         if (resignPosition >= 0)

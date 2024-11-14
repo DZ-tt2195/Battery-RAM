@@ -15,7 +15,6 @@ public class GluttonousRobot : PlayerCard
         if (batteryHere >= file.miscAmount)
             AddCrown(player, file, logged);
         else
-            LoseCoin(player, file, logged);
-        player.PopStack();
+            LoseCrown(player, file, logged);
     }
 }
