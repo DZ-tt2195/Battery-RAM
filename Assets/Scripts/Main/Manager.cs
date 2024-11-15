@@ -253,7 +253,11 @@ public class Manager : PhotonCompatible
 
     void NextAction()
     {
-        if (currentStep < actionStack.Count - 1)
+        if (turnNumber == 12)
+        {
+            DoFunction(() => DisplayEnding(-1));
+        }
+        else if (currentStep < actionStack.Count - 1)
         {
             playerDiscard.Shuffle();
             while (playerDiscard.childCount > 0)
@@ -288,7 +292,7 @@ public class Manager : PhotonCompatible
         {
             turnNumber++;
             Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
-            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber}", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber} / 12", 0));
 
             waitingOnPlayers = 1;
             DoFunction(() => CreateEventPopup(-1));

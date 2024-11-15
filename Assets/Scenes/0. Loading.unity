@@ -1746,9 +1746,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2db6c0ce187e46ffb586818755f50a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numCards: 4
-  numCoins: 4
-  targetCrown: 20
+  numCards: 5
+  numCoins: 10
+  gameLength: 12
 --- !u!1 &1327296366
 GameObject:
   m_ObjectHideFlags: 0
