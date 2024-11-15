@@ -540,15 +540,30 @@ public class Card : PhotonCompatible
         }
 
         Action action = () => LoseCoin(player, dataFile, logged);
-        player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
-            $"Pay {dataFile.coinAmount} Coin to {this.name}?", dataFile, logged));
+        if (dataFile.coinAmount == 0)
+        {
+            action();
+        }
+        else
+        {
+            player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
+                $"Pay {dataFile.coinAmount} Coin to {this.name}?", dataFile, logged));
+        }
     }
 
     protected void AskLoseCrown(Player player, CardData dataFile, int logged)
     {
         Action action = () => LoseCrown(player, dataFile, logged);
-        player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
-            $"Lose {dataFile.crownAmount} Crown for {this.name}?", dataFile, logged));
+
+        if (dataFile.crownAmount == 0)
+        {
+            action();
+        }
+        else
+        {
+            player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
+                $"Lose {dataFile.crownAmount} Crown for {this.name}?", dataFile, logged));
+        }
     }
 
     void ChoosePay(Player player, Action ifDone, string text, CardData dataFile, int logged)

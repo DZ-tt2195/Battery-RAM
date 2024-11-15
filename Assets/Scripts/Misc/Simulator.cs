@@ -16,7 +16,7 @@ public class Simulator : MonoBehaviour
 
     void RunLoop()
     {
-        //default card: $4, 3 Crowns, no abilities/batteries
+        //default card: $4, 4 Crowns, no abilities/batteries
         for (int i = 0; i<gameLength; i++)
         {
             if (numCards == 0)
@@ -36,7 +36,7 @@ public class Simulator : MonoBehaviour
         }
 
         Debug.Log($"Cards played: {playedCards}" +
-            $"\nCrowns: {playedCards * 3}" +
+            $"\nCrowns: {playedCards * 4}" +
             $"\nLeftover cards: {numCards}" +
             $"\nLeftover coins: {numCoins}");
     }

@@ -37,9 +37,9 @@
     ],
     [
       "Tournament",
-      "Players pay any amount of Coin (at once). Whoever paid the most gets +1 Crown, the least gets -1 Crown.",
+      "Players remove any amount of Battery (at once). Whoever removed the most gets +1 Crown, the least gets -1 Crown.",
       "FALSE",
-      "LoseCoin/AddCrown/LoseCrown",
+      "AskLoseBattery/AddCrown/LoseCrown",
       "",
       "",
       "1",
@@ -70,6 +70,18 @@
       "",
       "",
       "Sai Beppu/Dominion: Rising Sun"
+    ],
+    [
+      "Crunch Period",
+      "You may pay 1 Coin per Battery you have, to play 1 Card (you still pay its cost)",
+      "TRUE",
+      "SetToTotalBattery/AskLoseCoin/PlayCard",
+      "",
+      "",
+      "",
+      "",
+      "1",
+      "Claus Stephan/Dominion: Prosperity/(Worker's Village)"
     ]
   ]
 }

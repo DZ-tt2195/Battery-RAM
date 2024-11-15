@@ -23,24 +23,34 @@ public class Tournament : EventCard
             amountRemoved = new int[Manager.instance.playersInOrder.Count];
             Manager.instance.AddStep(HandOutResources, 1);
         }
-        player.RememberStep(this, StepType.UndoPoint, () => Loop(player, logged));
+        player.RememberStep(this, (player.TotalBattery() == 0) ? StepType.None : StepType.UndoPoint, () => LoseAnotherBattery(player, 0, logged));
     }
 
-    void Loop(Player player, int logged)
+    protected void LoseAnotherBattery(Player player, int counter, int logged)
     {
-        player.ChooseSlider(0, player.resourceDictionary[Resource.Coin], "Pay any amount of Coin to Tournament.", Vector3.zero, Done);
+        sideCounter = counter;
+        player.ChooseButton(new() { "Done" }, new(0, -250), "", null);
+        player.ChooseCardOnScreen(player.cardsInPlay.Where(card => card.batteryHere >= 1).OfType<Card>().ToList(), $"Lose a Battery to {this.name}({counter} so far).", Next);
 
-        void Done()
+        void Next()
         {
-            int paidMoney = player.choice;
-            player.ResourceRPC(Resource.Coin, -1 * paidMoney, logged);
-            DoFunction(() => RememberMoney(player.playerPosition, paidMoney));
-            player.PopStack();
+            if (player.chosenCard != null)
+            {
+                PlayerCard playerCard = (PlayerCard)player.chosenCard;
+                playerCard.BatteryRPC(player, -1, logged, this.name);
+                player.RememberStep(this, (player.TotalBattery() == 0) ? StepType.None : StepType.UndoPoint, () => LoseAnotherBattery(player, counter+1, logged));
+            }
+            else
+            {
+                player.PreserveTextRPC($"{player.name} removed {counter} Battery.", logged);
+                DoFunction(() => RememberBattery(player.playerPosition, counter));
+                player.PopStack();
+            }
         }
     }
 
     [PunRPC]
-    void RememberMoney(int playerPosition, int amount)
+    void RememberBattery(int playerPosition, int amount)
     {
         amountRemoved[playerPosition] = amount;
     }
@@ -51,8 +61,8 @@ public class Tournament : EventCard
         int lowest = amountRemoved.Min();
 
         Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
-        Log.instance.DoFunction(() => Log.instance.AddText($"Most Coin paid: {highest}", 1));
-        Log.instance.DoFunction(() => Log.instance.AddText($"Least Coin paid: {lowest}", 1));
+        Log.instance.DoFunction(() => Log.instance.AddText($"Most Battery removed: {highest}", 1));
+        Log.instance.DoFunction(() => Log.instance.AddText($"Least Battery removed: {lowest}", 1));
 
         for (int i = 0; i < Manager.instance.playersInOrder.Count; i++)
         {
