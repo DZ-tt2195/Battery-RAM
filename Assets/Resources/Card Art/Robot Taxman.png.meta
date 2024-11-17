@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 40be8a291ea2348b68a014c39b720c82
+guid: 3f8cc9acc7bf84b908cbc0bd581c5e0f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6701056891116798452
-    second: Villanous Robot_0
+      213: 7884196396915885620
+    second: Robot Taxman_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Villanous Robot_0
+      name: Robot Taxman_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1464
-        height: 1046
+        width: 1488
+        height: 1063
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c0ebc41e2401103a0800000000000000
-      internalID: -6701056891116798452
+      spriteID: 4360699c9da4a6d60800000000000000
+      internalID: 7884196396915885620
       vertices: []
       indices: 
       edges: []
