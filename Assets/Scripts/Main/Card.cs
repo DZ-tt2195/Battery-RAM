@@ -168,7 +168,7 @@ public class Card : PhotonCompatible
                     player.PopStack();
             }
         }
-        else
+        else if (!undo)
         {
             player.PopStack();
         }
@@ -342,10 +342,24 @@ public class Card : PhotonCompatible
 
     protected void DiscardCard(Player player, CardData dataFile, int logged)
     {
-        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
+        if (player.cardsInHand.Count <= dataFile.cardAmount)
+        {
+            DiscardAll(player, dataFile, logged);
+        }
+        else
+        {
+            player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
+            player.RememberStep(this, (player.cardsInHand.Count <= 1) ? StepType.None : StepType.UndoPoint,
+                () => ChooseDiscard(player, dataFile, false, 1, logged));
+        }
+    }
 
-        player.RememberStep(this, (player.cardsInHand.Count <= 1) ? StepType.None : StepType.UndoPoint,
-            () => ChooseDiscard(player, dataFile, false, 1, logged));
+    void DiscardAll(Player player, CardData dataFile, int logged)
+    {
+        for (int i = 0; i<player.cardsInHand.Count; i++)
+            player.DiscardPlayerCard(player.cardsInHand[0], logged);
+        PostDiscarding(player, true, dataFile, logged);
+        player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     protected void AskDiscard(Player player, CardData dataFile, int logged)

@@ -82,6 +82,13 @@
       "",
       "1",
       "Claus Stephan/Dominion: Prosperity/(Worker's Village)"
+    ],
+    [
+      "Rethink",
+      "Discard 2 Card. Then if you have 0 Card in hand, +1 Card.",
+      "FALSE",
+      "DrawCard/DiscardCard",
+      "2"
     ]
   ]
 }
