@@ -88,7 +88,12 @@
       "Discard 2 Card. Then if you have 0 Card in hand, +1 Card.",
       "FALSE",
       "DrawCard/DiscardCard",
-      "2"
+      "2",
+      "",
+      "",
+      "",
+      "",
+      "Jim Nelson/MTG: Saviors of Kamigawa/(One With Nothing)"
     ]
   ]
 }

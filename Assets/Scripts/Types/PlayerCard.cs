@@ -41,8 +41,11 @@ public class PlayerCard : Card
 
     public virtual void ActivateThis(Player player, int logged)
     {
-        stepCounter = -1;
-        player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        if (dataFile.useSheets)
+        {
+            stepCounter = -1;
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        }
     }
 
     public bool CanPayCost(Player player)

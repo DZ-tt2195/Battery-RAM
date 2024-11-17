@@ -36,7 +36,10 @@ public class EventCard : Card
         player.DoFunction(() => player.ChangeButtonColor(false));
         player.AddToStack(() => player.RememberStep(player, StepType.UndoPoint, () => player.EndTurn()), true);
 
-        stepCounter = -1;
-        player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        if (dataFile.useSheets)
+        {
+            stepCounter = -1;
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+        }
     }
 }

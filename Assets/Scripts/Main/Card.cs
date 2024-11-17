@@ -349,8 +349,7 @@ public class Card : PhotonCompatible
         else
         {
             player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
-            player.RememberStep(this, (player.cardsInHand.Count <= 1) ? StepType.None : StepType.UndoPoint,
-                () => ChooseDiscard(player, dataFile, false, 1, logged));
+            player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, 1, logged));
         }
     }
 
