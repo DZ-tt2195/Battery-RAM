@@ -237,12 +237,6 @@ public class Manager : PhotonCompatible
     }
 
     [PunRPC]
-    internal void Instructions(string text)
-    {
-        instructions.text = KeywordTooltip.instance.EditText(text);
-    }
-
-    [PunRPC]
     internal void Continue()
     {
         if (AmMaster())
@@ -275,6 +269,7 @@ public class Manager : PhotonCompatible
             }
 
             currentStep++;
+            waitingOnPlayers = playersInOrder.Count;
             actionStack[currentStep]();
         }
         else
@@ -301,13 +296,11 @@ public class Manager : PhotonCompatible
 
         void ResolveEvent()
         {
-            waitingOnPlayers = playersInOrder.Count;
             nextEvent.ActivateThis(0);
         }
 
         void EveryoneTurn()
         {
-            waitingOnPlayers = playersInOrder.Count;
             foreach (Player player in playersInOrder)
                 player.DoFunction(() => player.StartMainTurn(), player.realTimePlayer);
         }
@@ -432,6 +425,12 @@ public class Manager : PhotonCompatible
             return PhotonNetwork.IsMasterClient;
         else
             return true;
+    }
+
+    [PunRPC]
+    internal void Instructions(string text)
+    {
+        instructions.text = KeywordTooltip.instance.EditText(text);
     }
 
     #endregion

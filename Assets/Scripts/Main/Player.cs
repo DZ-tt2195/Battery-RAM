@@ -110,7 +110,7 @@ public class Player : PhotonCompatible
 
         resourceDictionary = new()
         {
-            { Resource.Coin, 10 },
+            { Resource.Coin, (Application.isEditor && (!PhotonNetwork.IsConnected ||  PhotonNetwork.CurrentRoom.MaxPlayers == 1)) ? 20 : 4 },
             { Resource.Crown, 0 },
         };
         UpdateResourceText();
@@ -118,7 +118,7 @@ public class Player : PhotonCompatible
         if (InControl())
         {
             resignButton.onClick.AddListener(() => Manager.instance.DisplayEnding(this.playerPosition));
-            DoFunction(() => DrawPlayerCards(5, 0), RpcTarget.MasterClient);
+            DoFunction(() => DrawPlayerCards(4, 0), RpcTarget.MasterClient);
 
             int eventsToDraw = (!PhotonNetwork.IsConnected || PhotonNetwork.CurrentRoom.MaxPlayers <= 2) ? 3 : 2;
             DoFunction(() => DrawEventCards(eventsToDraw, 0), RpcTarget.MasterClient);

@@ -48,22 +48,6 @@
       "Julien Delval/Dominion: Renaissance/(Acting Troupe)"
     ],
     [
-      "Robot Thief",
-      "\"+7 Coin, -1 Crown.",
-      "4",
-      "3",
-      "1",
-      "2",
-      "TRUE",
-      "AddCoin/LoseCrown",
-      "",
-      "7",
-      "1",
-      "",
-      "0",
-      "Evyn Fong/MTG: Outlaws of Thunder Junction/(Vault Plunderer)"
-    ],
-    [
       "Robot Gatherer",
       "\"+1 Crown per 5 Battery you have (round down).",
       "3",
@@ -78,6 +62,22 @@
       "",
       "-5",
       "Hans Krill/Dominion: Allies/(Herb Gatherer)"
+    ],
+    [
+      "Robot Thief",
+      "\"+7 Coin, -1 Crown.",
+      "4",
+      "3",
+      "1",
+      "2",
+      "TRUE",
+      "AddCoin/LoseCrown",
+      "",
+      "7",
+      "1",
+      "",
+      "0",
+      "Evyn Fong/MTG: Outlaws of Thunder Junction/(Vault Plunderer)"
     ],
     [
       "Robot Courier",
@@ -97,7 +97,7 @@
     ],
     [
       "Robot Shopkeeper",
-      "You may play 1 Card. If you do, remove all its Battery.",
+      "You may play 1 Card. If you do, remove its Battery.",
       "2",
       "5",
       "1",
@@ -176,6 +176,22 @@
       "Eric Peterson/MTG: Modern Horizons 3/(Junk Diver)"
     ],
     [
+      "Robot Leader",
+      "\"+1 Coin per Card you have in play.",
+      "4",
+      "2",
+      "2",
+      "0",
+      "TRUE",
+      "SetToPlayArea/AddCoin",
+      "",
+      "",
+      "",
+      "",
+      "1",
+      "Chris Rahn/MTG: Guilds of Ravnica/(Aurela, Examplar of Justice)"
+    ],
+    [
       "Villanous Robot",
       "\"-1 Crown. Play 1 Card.\"",
       "1",
@@ -208,20 +224,20 @@
       "Osamu Inoue/Dominion: Rising Sun/(Tea House)"
     ],
     [
-      "Robot Leader",
-      "\"+1 Coin per Card you have in play.",
-      "4",
+      "Hunting Robot",
+      "If you have 1 or less Card in hand, +2 Card.",
       "2",
+      "6",
       "2",
-      "0",
+      "3",
       "TRUE",
-      "SetToPlayArea/AddCoin",
-      "",
+      "HandOrLess/DrawCard",
+      "2",
       "",
       "",
       "",
       "1",
-      "Chris Rahn/MTG: Guilds of Ravnica/(Aurela, Examplar of Justice)"
+      "Julien Delval/Dominion: Allies/(Hunter)"
     ],
     [
       "Robot Exorcist",
@@ -238,22 +254,6 @@
       "",
       "0",
       "Joshua Stewart/Dominion: Nocturne/(Exorcist)"
-    ],
-    [
-      "Hunting Robot",
-      "If you have 1 or less Card in hand, +2 Card.",
-      "2",
-      "6",
-      "2",
-      "3",
-      "TRUE",
-      "HandOrLess/DrawCard",
-      "2",
-      "",
-      "",
-      "",
-      "1",
-      "Julien Delval/Dominion: Allies/(Hunter)"
     ],
     [
       "Robot Investor",
@@ -336,20 +336,36 @@
       "Lynell Ingram/Dominion: Adventures/(Artificer)"
     ],
     [
-      "Robot Treasurer",
-      "\"+1 Coin per 2 Coin you have (round down).",
-      "6",
-      "12",
-      "4",
-      "1",
+      "Robot Lecturer",
+      "\"+1 Coin per Card in your hand.\"",
+      "3",
+      "10",
+      "3",
+      "3",
       "TRUE",
-      "SetToCoin/AddCoin",
+      "SetToHand/AddCoin",
       "",
       "",
       "",
       "",
-      "-2",
-      "Claus Stephan/Dominion: Renaissance/(Treasurer)"
+      "1",
+      "Kieran Yanner/MTG: Strixhaven: School of Mages/(Professor Onyx)"
+    ],
+    [
+      "Robot Aristocrat",
+      "Play 1 Card. If you do, double its Battery.",
+      "8",
+      "11",
+      "3",
+      "1",
+      "FALSE",
+      "PlayCard/AddBattery",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Yusuke Mamada/Dominion: Rising Sun"
     ],
     [
       "Robot Chef",
@@ -366,6 +382,22 @@
       "3",
       "0",
       "Forrest Imel/MTG: Commander Legends: Battle for Baldur's Gate/(Master Chef)"
+    ],
+    [
+      "Robot Treasurer",
+      "\"+1 Coin per 2 Coin you have (round down).",
+      "6",
+      "12",
+      "4",
+      "1",
+      "TRUE",
+      "SetToCoin/AddCoin",
+      "",
+      "",
+      "",
+      "",
+      "-2",
+      "Claus Stephan/Dominion: Renaissance/(Treasurer)"
     ],
     [
       "Robot Inventor",
@@ -407,7 +439,7 @@
       "4",
       "3",
       "FALSE",
-      "",
+      "AddCrown",
       "",
       "",
       "1",
