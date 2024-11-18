@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Good Harvest_0: -3417513362811466553
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

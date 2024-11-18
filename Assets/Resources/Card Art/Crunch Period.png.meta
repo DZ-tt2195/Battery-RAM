@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Crunch Period_0: -2717861548848663300
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

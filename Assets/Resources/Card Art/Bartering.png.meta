@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Bartering_0: 5692686742564133849
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

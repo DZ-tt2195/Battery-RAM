@@ -74,22 +74,27 @@ public class Player : PhotonCompatible
     protected override void Awake()
     {
         base.Awake();
-        if (PhotonNetwork.IsConnected && pv.AmOwner)
-            pv.Owner.NickName = PlayerPrefs.GetString("Online Username");
         this.bottomType = this.GetType();
 
+        myEvents = new();
         resignButton = GameObject.Find("Resign Button").GetComponent<Button>();
         keepHand = transform.Find("Keep Hand");
         keepPlay = transform.Find("Keep Play");
-        myEvents = new();
     }
 
     private void Start()
     {
+        if (PhotonNetwork.IsConnected && pv.AmOwner)
+            DoFunction(() => SendName(PlayerPrefs.GetString("Online Username")), RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    void SendName(string username)
+    {
+        pv.Owner.NickName = username;
+        hoverEvent.Setup(this, $"{username}'s Events", new(0, 250));
+        this.name = username;
         this.transform.SetParent(Manager.instance.storePlayers);
-        if (PhotonNetwork.IsConnected)
-            this.name = pv.Owner.NickName;
-        hoverEvent.Setup(this, $"{this.name}'s Events", new(0, 250));
     }
 
     internal void AssignInfo(int position)
@@ -102,7 +107,7 @@ public class Player : PhotonCompatible
 
         myButton = Instantiate(CarryVariables.instance.playerButtonPrefab);
         myButton.transform.SetParent(Manager.instance.canvas.transform);
-        myButton.transform.localScale = Manager.instance.canvas.transform.localScale;
+        myButton.transform.localScale = Vector3.one;
         myButton.transform.localPosition = new(-1100, 425 - (100 * playerPosition));
         myButton.transform.GetChild(0).GetComponent<TMP_Text>().text = this.name;
         myButton.onClick.AddListener(MoveScreen);
@@ -117,13 +122,14 @@ public class Player : PhotonCompatible
 
         if (InControl())
         {
-            resignButton.onClick.AddListener(() => Manager.instance.DisplayEnding(this.playerPosition));
-            DoFunction(() => DrawPlayerCards(4, 0), RpcTarget.MasterClient);
+            resignButton.onClick.AddListener(() => Manager.instance.DoFunction(() => Manager.instance.DisplayEnding(this.playerPosition)));
+            DoFunction(() => DrawPlayerCards(4, -1), RpcTarget.MasterClient);
 
             int eventsToDraw = (!PhotonNetwork.IsConnected || PhotonNetwork.CurrentRoom.MaxPlayers <= 2) ? 3 : 2;
-            DoFunction(() => DrawEventCards(eventsToDraw, 0), RpcTarget.MasterClient);
+            DoFunction(() => DrawEventCards(eventsToDraw, -1), RpcTarget.MasterClient);
 
             Invoke(nameof(MoveScreen), 0.25f);
+            RememberStep(this, StepType.UndoPoint, () => EndTurn());
         }
     }
 
@@ -187,12 +193,11 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void DrawEventCards(int number, int logged)
     {
-        int counter = 0;
-        while (counter < number)
+        for (int i = 0; i < number; i++)
         {
             Card card = Manager.instance.eventDeck.GetChild(0).GetComponent<Card>();
+            card.transform.SetParent(null);
             DoFunction(() => SendEventCardToAsker(card.pv.ViewID, logged), this.realTimePlayer);
-            counter++;
         }
     }
 
@@ -291,12 +296,11 @@ public class Player : PhotonCompatible
     [PunRPC]
     internal void DrawPlayerCards(int number, int logged)
     {
-        int counter = 0;
-        while (counter < number)
+        for (int i = 0; i<number; i++)
         {
             Card card = Manager.instance.playerDeck.GetChild(0).GetComponent<Card>();
+            card.transform.SetParent(null);
             DoFunction(() => SendPlayerCardToAsker(card.pv.ViewID, logged), this.realTimePlayer);
-            counter++;
         }
     }
 

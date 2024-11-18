@@ -179,9 +179,9 @@
       "Robot Waiter",
       "You may pay 3 Coin for +3 Battery.",
       "3",
-      "5",
+      "3",
       "2",
-      "2",
+      "1",
       "TRUE",
       "AskLoseCoin/AddBattery",
       "",
@@ -190,6 +190,22 @@
       "",
       "0",
       "Osamu Inoue/Dominion: Rising Sun/(Tea House)"
+    ],
+    [
+      "Robot Exorcist",
+      "You may discard 3 Card for +3 Crown.",
+      "3",
+      "5",
+      "2",
+      "2",
+      "TRUE",
+      "AskDiscard/AddCrown",
+      "3",
+      "",
+      "3",
+      "",
+      "0",
+      "Joshua Stewart/Dominion: Nocturne/(Exorcist)"
     ],
     [
       "Hunting Robot",
@@ -222,22 +238,6 @@
       "",
       "3",
       "Claus Stephan/Dominion: Nocturne/(Greed)"
-    ],
-    [
-      "Robot Exorcist",
-      "You may discard 3 Card for +3 Crown.",
-      "3",
-      "7",
-      "2",
-      "3",
-      "TRUE",
-      "AskDiscard/AddCrown",
-      "3",
-      "",
-      "3",
-      "",
-      "0",
-      "Joshua Stewart/Dominion: Nocturne/(Exorcist)"
     ],
     [
       "Robot Investor",

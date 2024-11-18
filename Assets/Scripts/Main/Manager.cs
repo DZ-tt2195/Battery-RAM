@@ -135,7 +135,8 @@ public class Manager : PhotonCompatible
 
         if (PhotonNetwork.IsMasterClient)
         {
-            ReadySetup();
+            AddStep(ReadySetup);
+            Continue();
         }
     }
 
@@ -146,17 +147,13 @@ public class Manager : PhotonCompatible
         storePlayers.Shuffle();
 
         for (int i = 0; i < storePlayers.childCount; i++)
-        {
-            Player player = storePlayers.transform.GetChild(i).GetComponent<Player>();
-            DoFunction(() => AddPlayer(player.name, i));
-        }
-        Continue();
+            DoFunction(() => AddPlayer(storePlayers.transform.GetChild(i).GetComponent<PhotonView>().ViewID, i));
     }
 
     [PunRPC]
-    void AddPlayer(string name, int position)
+    void AddPlayer(int PV, int position)
     {
-        Player nextPlayer = GameObject.Find(name).GetComponent<Player>();
+        Player nextPlayer = PhotonView.Find(PV).GetComponent<Player>();
         playersInOrder ??= new();
         playersInOrder.Insert(position, nextPlayer);
         instructions.text = "";
@@ -241,7 +238,7 @@ public class Manager : PhotonCompatible
     {
         if (AmMaster())
         {
-            Invoke(nameof(NextAction), 0.25f);
+            Invoke(nameof(NextAction), 0.5f);
         }
     }
 
@@ -269,7 +266,14 @@ public class Manager : PhotonCompatible
             }
 
             currentStep++;
-            waitingOnPlayers = playersInOrder.Count;
+
+            if (playersInOrder != null)
+                waitingOnPlayers = playersInOrder.Count;
+            else if (PhotonNetwork.IsConnected)
+                waitingOnPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
+            else
+                waitingOnPlayers = 1;
+
             actionStack[currentStep]();
         }
         else
@@ -287,7 +291,7 @@ public class Manager : PhotonCompatible
         {
             turnNumber++;
             Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
-            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber} / 12", 0));
+            Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber} / 12 - {player.name} is in charge", 0));
 
             waitingOnPlayers = 1;
             DoFunction(() => CreateEventPopup(-1));

@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Robot Lecturer_0: 8900665194188621319
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

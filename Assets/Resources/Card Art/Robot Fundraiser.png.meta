@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Robot Fundraiser_0: -5127024977272795431
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

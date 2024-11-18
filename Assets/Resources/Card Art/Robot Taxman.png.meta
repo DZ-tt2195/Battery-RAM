@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Robot Taxman_0: 7884196396915885620
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

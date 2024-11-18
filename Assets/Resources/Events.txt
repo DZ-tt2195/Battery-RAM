@@ -27,7 +27,7 @@
       "Power Outage",
       "You can't add Battery this turn (even when playing a card).",
       "FALSE",
-      "",
+      "LoseBattery",
       "",
       "",
       "",

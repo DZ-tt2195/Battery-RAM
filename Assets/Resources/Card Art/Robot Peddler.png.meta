@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Robot Peddler_0: 6494653636838782528
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

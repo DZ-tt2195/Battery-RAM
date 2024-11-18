@@ -21,7 +21,7 @@ public class Log : PhotonCompatible
 
     [Foldout("Undos", true)]
     public List<LogText> undosInLog = new();
-    public NextStep undoToThis;
+    public NextStep undoToThis = null;
     [SerializeField] Button undoButton;
     bool currentUndoState = false;
 
@@ -80,9 +80,12 @@ public class Log : PhotonCompatible
 
         if (undoToThis != null)
         {
-            newText.step = undoToThis;
+            if (undoToThis.action != null)
+            {
+                newText.step = undoToThis;
+                undosInLog.Insert(0, newText);
+            }
             undoToThis = null;
-            undosInLog.Insert(0, newText);
         }
     }
 

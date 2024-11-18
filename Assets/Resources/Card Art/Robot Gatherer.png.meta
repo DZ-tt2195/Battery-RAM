@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Robot Gatherer_0: -213519092910604388
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

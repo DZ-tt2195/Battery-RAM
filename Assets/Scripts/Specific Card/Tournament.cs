@@ -84,6 +84,6 @@ public class Tournament : EventCard
     {
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.ResourceRPC(Resource.Crown, crownChange, 1);
-        player.EndTurn();
+        player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
     }
 }
