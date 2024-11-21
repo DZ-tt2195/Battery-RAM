@@ -73,18 +73,19 @@ public class Popup : MonoBehaviour
         Resize();
     }
 
-    internal int AddCardButton(Card card, float alpha)
+    internal int AddCardButton(Card card, float alpha, bool clickable)
     {
         Button nextButton = Instantiate(cardButton, this.transform.GetChild(1));
         nextButton.GetComponent<RightClickMe>().AssignInfo(card.cg, card.GetFile().artCredit);
 
         nextButton.name = card.name;
-        nextButton.interactable = true;
+        nextButton.interactable = clickable;
         int buttonNumber = buttonsInCollector.Count;
         nextButton.onClick.AddListener(() => decidingPlayer.DecisionMade(buttonNumber, card));
         buttonsInCollector.Add(nextButton);
 
         CanvasGroup group = Instantiate(card.cg);
+        group.alpha = alpha;
         group.transform.SetParent(nextButton.transform);
         group.transform.localScale = Vector3.one;
         group.transform.localPosition = Vector3.zero;

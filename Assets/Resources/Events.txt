@@ -24,16 +24,16 @@
       "Marco Promo/Dominion: Empires"
     ],
     [
-      "Power Outage",
+      "Stockout",
       "You can't add Battery this turn (even when playing a card).",
       "FALSE",
-      "LoseBattery",
       "",
       "",
       "",
       "",
       "",
-      "Marcel-André Casasola Merkle/Dominion: Nocturne/(Ghost Town)"
+      "",
+      "Marcel-André Casasola Merkle/Dominion: Dark Ages/(Ruined Market)"
     ],
     [
       "Tournament",
@@ -94,6 +94,30 @@
       "",
       "",
       "Jim Nelson/MTG: Saviors of Kamigawa/(One With Nothing)"
+    ],
+    [
+      "All Nighter",
+      "Remove 1 Battery from a Robot to do its instructions.",
+      "FALSE",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Elisa Cella/Dominion: Nocturne/(Night Watchman)"
+    ],
+    [
+      "Power Outage",
+      "Skip the first 2 Robots you resolve this turn (they still lose 1 Battery).",
+      "FALSE",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "2",
+      "Marcel-André Casasola Merkle/Dominion: Nocturne/(Ghost Town)"
     ]
   ]
 }

@@ -323,7 +323,7 @@ public class Manager : PhotonCompatible
             eventPopup.gameObject.SetActive(true);
 
             eventPopup.RemoveButton(0);
-            eventPopup.AddCardButton(nextEvent, 1);
+            eventPopup.AddCardButton(nextEvent, 1, false);
             eventPopup.DisableButton(0);
         }
     }

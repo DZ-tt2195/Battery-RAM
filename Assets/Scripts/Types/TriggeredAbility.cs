@@ -110,3 +110,16 @@ public class CanAddBattery : TriggeredAbility
         return new object[0];
     }
 }
+
+public class CanResolveCard : TriggeredAbility
+{
+    public CanResolveCard(PhotonCompatible source, bool justThisTurn, Func<int, object[], bool> boolAbility, Func<string, object[], bool> condition = null) : base(source, boolAbility, justThisTurn, condition)
+    {
+        comparison = nameof(CanResolveCard);
+    }
+
+    public static object[] CheckParameters(PlayerCard card)
+    {
+        return new object[1] {card};
+    }
+}

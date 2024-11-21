@@ -590,7 +590,11 @@ public class Player : PhotonCompatible
 
             PreserveTextRPC($"{this.name} resolves {card.name}.", 0);
             card.BatteryRPC(this, -1, 0);
-            card.ActivateThis(this, 1);
+
+            if (BoolFromAbilities(false, nameof(CanResolveCard), CanResolveCard.CheckParameters(card), 1))
+                PopStack();
+            else
+                card.ActivateThis(this, 1);
         }
     }
 
@@ -631,14 +635,7 @@ public class Player : PhotonCompatible
 
         for (int i = 0; i < listOfCards.Count; i++)
         {
-            try
-            {
-                popup.AddCardButton(listOfCards[i], alphas[i]);
-            }
-            catch
-            {
-                popup.AddCardButton(listOfCards[i], 1);
-            }
+            popup.AddCardButton(listOfCards[i], 1, true);
         }
         popup.WaitForChoice();
     }

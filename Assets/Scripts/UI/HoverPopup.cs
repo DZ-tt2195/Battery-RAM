@@ -69,7 +69,7 @@ public class HoverPopup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     internal void AddCard(Card card, float alpha, string text)
     {
-        int number = popup.AddCardButton(card, alpha);
+        int number = popup.AddCardButton(card, alpha, false);
         popup.DisableButton(number);
         textBox.text = $"{text} ({popup.buttonsInCollector.Count})";
     }
