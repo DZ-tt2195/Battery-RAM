@@ -24,7 +24,7 @@
       "Marco Promo/Dominion: Empires"
     ],
     [
-      "Stockout",
+      "Power Outage",
       "You can't add Battery this turn (even when playing a card).",
       "FALSE",
       "",
@@ -33,7 +33,7 @@
       "",
       "",
       "",
-      "Marcel-André Casasola Merkle/Dominion: Dark Ages/(Ruined Market)"
+      "Marcel-André Casasola Merkle/Dominion: Nocturne/(Ghost Town)"
     ],
     [
       "Tournament",
@@ -62,7 +62,7 @@
     [
       "Good Harvest",
       "Each time you play a Card this turn, +1 Card at end of turn.",
-      "FALSE",
+      "TRUE",
       "DrawCard",
       "",
       "",
@@ -108,7 +108,7 @@
       "Elisa Cella/Dominion: Nocturne/(Night Watchman)"
     ],
     [
-      "Power Outage",
+      "Rainfall",
       "Skip the first 2 Robots you resolve this turn (they still lose 1 Battery).",
       "FALSE",
       "",
@@ -117,7 +117,19 @@
       "",
       "",
       "2",
-      "Marcel-André Casasola Merkle/Dominion: Nocturne/(Ghost Town)"
+      "Volkan Baga/MTG: Ravnica Allegiance/(Shimmer of Possibility)"
+    ],
+    [
+      "Shipments",
+      "\"+2 Battery.\"",
+      "TRUE",
+      "AddBattery",
+      "",
+      "",
+      "",
+      "2",
+      "",
+      "Marcel-André Casasola Merkle/Dominion: Menagerie/(Sleigh)"
     ]
   ]
 }

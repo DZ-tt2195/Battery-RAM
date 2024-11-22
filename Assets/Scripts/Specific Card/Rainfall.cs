@@ -1,7 +1,7 @@
-using Photon.Pun;
 using UnityEngine;
+using Photon.Pun;
 
-public class PowerOutage : EventCard
+public class Rainfall : EventCard
 {
     protected override void Awake()
     {
@@ -15,13 +15,20 @@ public class PowerOutage : EventCard
         base.ResolveEvent(playerPosition, logged);
         Player player = Manager.instance.playersInOrder[playerPosition];
 
-        CanAddBattery ability = null; ability = new(this, true, NoBattery);
+        int counter = dataFile.miscAmount;
+        CanResolveCard ability = null; ability = new(this, true, NoBattery);
         player.NewAbility(ability);
         player.PopStack();
 
         bool NoBattery(int myLogged, object[] parameters)
         {
-            player.PreserveTextRPC($"{player.name} can't add Battery ({this.name}).", logged);
+            counter--;
+            PlayerCard card = (PlayerCard)parameters[0];
+            player.PreserveTextRPC($"{player.name} can't resolve {card.name} ({this.name}).", logged);
+
+            if (counter == 0)
+                player.AbilityExpired(ability);
+
             return false;
         }
     }
