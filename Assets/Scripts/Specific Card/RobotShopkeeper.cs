@@ -19,6 +19,6 @@ public class RobotShopkeeper : PlayerCard
     {
         if (cardToPlay != null)
             cardToPlay.BatteryRPC(player, -1 * cardToPlay.batteryHere, logged, this.name);
-        player.PopStack();
+        player.Pivot();
     }
 }

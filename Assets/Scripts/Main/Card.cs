@@ -26,6 +26,7 @@ public class Card : PhotonCompatible
     protected List<string> activationSteps = new();
     protected int stepCounter;
     protected int sideCounter;
+    bool mayStopEarly;
 
     #endregion
 
@@ -165,21 +166,36 @@ public class Card : PhotonCompatible
                 if (stepCounter < activationSteps.Count)
                     StringParameters(activationSteps[stepCounter], new object[3] { player, dataFile, logged });
                 else
-                    player.PopStack();
+                    player.Pivot();
             }
         }
         else if (!undo)
         {
-            player.PopStack();
+            player.Pivot();
         }
     }
 
     protected void CheckBool(bool answer, Player player, CardData dataFile, int logged)
     {
+        mayStopEarly = true;
         if (answer)
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
         else if (activationSteps.Count != 0)
-            player.PopStack();
+            player.Pivot();
+    }
+
+    protected void ChangeSideCount(bool undo, int change)
+    {
+        if (undo)
+            sideCounter-=change;
+        else
+            sideCounter+=change;
+        Debug.Log(sideCounter);
+    }
+
+    protected void SetSideCount(bool undo, int newNumber)
+    {
+        ChangeSideCount(undo, newNumber - sideCounter);
     }
 
     #region +/- Resources
@@ -348,8 +364,7 @@ public class Card : PhotonCompatible
         }
         else
         {
-            player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)));
-            player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, 1, logged));
+            player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, logged));
             player.Pivot();
         }
     }
@@ -364,29 +379,30 @@ public class Card : PhotonCompatible
 
     protected void AskDiscard(Player player, CardData dataFile, int logged)
     {
+        mayStopEarly = true;
         if (player.cardsInHand.Count < dataFile.cardAmount)
         {
             CheckBool(false, player, dataFile, logged);
             return;
         }
 
-        player.AddToStack(() => FinishedDiscarding());
-        player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, true, 1, logged));
+        player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
+        player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, true, logged));
         player.Pivot();
-
-        void FinishedDiscarding()
-        {
-            CheckBool(sideCounter == dataFile.cardAmount, player, dataFile, logged);
-        }
     }
 
-    void ChooseDiscard(Player player, CardData dataFile, bool optional, int counter, int logged)
+    void ChooseDiscard(Player player, CardData dataFile, bool optional, int logged)
     {
-        sideCounter = counter;
-        string parathentical = (dataFile.cardAmount == 1) ? "" : $" ({counter}/{dataFile.cardAmount})";
+        player.RememberStep(this, StepType.Revert, () => ChangeSideCount(false, 1));
+        List<Card> cardsToChoose = player.cardsInHand.OfType<Card>().ToList();
+        string parathentical = (dataFile.cardAmount == 1) ? "" : $" ({sideCounter}/{dataFile.cardAmount})";
+
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard to {this.name}{parathentical}.", Next);
+        else if (cardsToChoose.Count <= 1)
+            player.AutoNewDecision();
+
+        player.ChooseCardOnScreen(cardsToChoose, $"Discard to {this.name}{parathentical}.", Next);
 
         void Next()
         {
@@ -395,15 +411,14 @@ public class Card : PhotonCompatible
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 player.DiscardPlayerCard(playerCard, logged);
 
-                if (counter == dataFile.cardAmount)
+                if (sideCounter == dataFile.cardAmount)
                 {
                     PostDiscarding(player, true, dataFile, logged);
-                    player.PopStack();
+                    player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
                 }
                 else
                 {
-                    player.RememberStep(this, (player.cardsInHand.Count == 1) ? StepType.None : StepType.UndoPoint,
-                        () => ChooseDiscard(player, dataFile, false, sideCounter+1, logged));
+                    player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, logged));
                 }
             }
             else
@@ -411,7 +426,11 @@ public class Card : PhotonCompatible
                 if (optional)
                     player.PreserveTextRPC($"{player.name} doesn't discard to {this.name}.", logged);
                 PostDiscarding(player, false, dataFile, logged);
-                player.PopStack();
+
+                if (mayStopEarly)
+                    CheckBool(false, player, dataFile, logged);
+                else
+                    player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
             }
         }
     }
@@ -432,16 +451,21 @@ public class Card : PhotonCompatible
         }
         else
         {
-            player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)));
-            player.RememberStep(this, (player.cardsInPlay.Count <= 1) ? StepType.None : StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, 1, logged));
+            player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
+            player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, logged));
             player.Pivot();
         }
     }
 
-    void ChooseAddBattery(Player player, CardData dataFile, int counter, int logged)
+    void ChooseAddBattery(Player player, CardData dataFile, int logged)
     {
-        sideCounter = counter;
-        string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({counter}/{dataFile.batteryAmount})";
+        player.RememberStep(this, StepType.Revert, () => ChangeSideCount(false, 1));
+        List<Card> cardsToChoose = player.cardsInPlay.OfType<Card>().ToList();
+
+        if (cardsToChoose.Count <= 1)
+            player.AutoNewDecision();
+
+        string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({sideCounter}/{dataFile.batteryAmount})";
         player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Battery{parathentical}.", Next);
 
         void Next()
@@ -451,20 +475,20 @@ public class Card : PhotonCompatible
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 playerCard.BatteryRPC(player, 1, logged, this.name);
 
-                if (counter == dataFile.batteryAmount)
+                if (sideCounter == dataFile.batteryAmount)
                 {
                     PostAddBattery(player, dataFile, logged);
-                    player.PopStack();
+                    player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
                 }
                 else
                 {
-                    player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter+1, logged));
+                    player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, logged));
                 }
             }
             else
             {
                 player.PreserveTextRPC($"{player.name} can't add any Battery.", logged);
-                player.PopStack();
+                player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
             }
         }
     }
@@ -479,37 +503,37 @@ public class Card : PhotonCompatible
 
     protected void LoseBattery(Player player, CardData dataFile, int logged)
     {
-        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)));
-        player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
-            () => ChooseLoseBattery(player, dataFile, false, 1, logged));
+        player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
+        player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, false, logged));
         player.Pivot();
     }
 
     protected void AskLoseBattery(Player player, CardData dataFile, int logged)
     {
+        mayStopEarly = true;
         if (player.TotalBattery() < dataFile.batteryAmount)
         {
             CheckBool(false, player, dataFile, logged);
             return;
         }
 
-        player.AddToStack(() => FinishedRemoving());
-        player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, true, 1, logged));
+        player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
+        player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, true, logged));
         player.Pivot();
-
-        void FinishedRemoving()
-        {
-            CheckBool(sideCounter == dataFile.batteryAmount, player, dataFile, logged);
-        }
     }
 
-    protected void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int counter, int logged)
+    protected void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int logged)
     {
-        sideCounter = counter;
-        string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({counter}/{dataFile.batteryAmount})";
+        List<Card> cardsToChoose = player.cardsInPlay.Where(card => card.batteryHere >= 1).OfType<Card>().ToList();
+        player.RememberStep(this, StepType.Revert, () => ChangeSideCount(false, 1));
+        string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({sideCounter}/{dataFile.batteryAmount})";
+
         if (optional)
-            player.ChooseButton(new() { "Decline" }, new(0, -250), "", null);
-        player.ChooseCardOnScreen(player.cardsInPlay.Where(card => card.batteryHere >= 1).OfType<Card>().ToList(), $"Lose a Battery to {this.name}{parathentical}.", Next);
+            player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
+        else if (cardsToChoose.Count <= 1)
+            player.AutoNewDecision();
+
+        player.ChooseCardOnScreen(cardsToChoose, $"Lose a Battery to {this.name}{parathentical}.", Next);
 
         void Next()
         {
@@ -518,22 +542,24 @@ public class Card : PhotonCompatible
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 playerCard.BatteryRPC(player, -1, logged, this.name);
 
-                if (counter == dataFile.batteryAmount)
+                if (sideCounter == dataFile.batteryAmount)
                 {
                     PostLoseBattery(player, true, dataFile, logged);
-                    player.PopStack();
                 }
                 else
                 {
-                    player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
-                        () => ChooseLoseBattery(player, dataFile, false, sideCounter+1, logged));
+                    player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, false, logged));
                 }
             }
             else
             {
                 player.PreserveTextRPC($"{player.name} doesn't remove any Battery.", logged);
                 PostLoseBattery(player, false, dataFile, logged);
-                player.PopStack();
+
+                if (mayStopEarly)
+                    CheckBool(false, player, dataFile, logged);
+                else
+                    player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
             }
         }
     }
@@ -592,6 +618,7 @@ public class Card : PhotonCompatible
             if (player.choice == 0)
             {
                 ifDone();
+                CheckBool(true, player, dataFile, logged);
             }
             else
             {

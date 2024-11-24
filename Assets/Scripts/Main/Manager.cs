@@ -123,7 +123,7 @@ public class Manager : PhotonCompatible
                 instructions.text = $"Waiting for more players ({storePlayers.childCount}/{PhotonNetwork.CurrentRoom.MaxPlayers})";
                 while (storePlayers.childCount < PhotonNetwork.CurrentRoom.MaxPlayers)
                 {
-                    instructions.text = $"Waiting for more players ({storePlayers.childCount} / {PhotonNetwork.CurrentRoom.MaxPlayers})";
+                    instructions.text = $"Waiting for more players ({storePlayers.childCount}/{PhotonNetwork.CurrentRoom.MaxPlayers})";
                     yield return null;
                 }
                 instructions.text = $"All players are in.";

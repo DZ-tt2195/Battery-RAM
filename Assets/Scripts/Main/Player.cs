@@ -33,7 +33,7 @@ public class NextStep
         if (this.stepType == StepType.UndoPoint && stepType != StepType.UndoPoint)
         {
             Log.instance.undoToThis = null;
-            Debug.Log("undopoint canceled");
+            //Debug.Log("undopoint canceled");
         }
 
         this.stepType = stepType;
@@ -568,9 +568,7 @@ public class Player : PhotonCompatible
         foreach (PlayerCard card in cardsInPlay)
         {
             if (!resolvedCards.Contains(card) && card.batteryHere > 0)
-            {
                 canResolve.Add(card);
-            }
         }
         if (canResolve.Count == 0)
         {
@@ -598,13 +596,13 @@ public class Player : PhotonCompatible
         else
         {
             resolvedCards.Add(card);
-            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()));
+            RememberStep(this, StepType.UndoPoint, () => ChooseToResolve());
 
             PreserveTextRPC($"{this.name} resolves {card.name}.", 0);
             card.BatteryRPC(this, -1, 0);
 
             if (BoolFromAbilities(false, nameof(CanResolveCard), CanResolveCard.CheckParameters(card), 1))
-                PopStack();
+                Pivot();
             else
                 card.ActivateThis(this, 1);
         }
@@ -632,18 +630,12 @@ public class Player : PhotonCompatible
         for (int i = 0; i < possibleChoices.Count; i++)
             popup.AddTextButton(possibleChoices[i]);
 
-        AddToStack(Boom);
+        inReaction.Add(() => Destroy(popup.gameObject));
         if (action != null)
         {
-            AddToStack(action);
+            inReaction.Add(action);
             Manager.instance.Instructions(changeInstructions);
         }
-        void Boom()
-        {
-            try { Destroy(popup.gameObject); } catch { }
-        }
-
-        popup.WaitForChoice();
     }
 
     public void ChooseCardFromPopup(List<Card> listOfCards, Vector3 position, string changeInstructions, Action action, List<float> alphas = null)
@@ -651,31 +643,26 @@ public class Player : PhotonCompatible
         Popup popup = Instantiate(CarryVariables.instance.cardPopup);
         popup.StatsSetup(this, changeInstructions, true, position);
 
-        AddToStack(Boom);
+        inReaction.Add(() => Destroy(popup.gameObject));
         if (action != null)
         {
-            AddToStack(action);
+            inReaction.Add(action);
             Manager.instance.Instructions(changeInstructions);
         }
         for (int i = 0; i < listOfCards.Count; i++)
         {
             popup.AddCardButton(listOfCards[i], 1, true);
         }
-        void Boom()
-        {
-            try { Destroy(popup.gameObject); } catch { }
-        }
-        popup.WaitForChoice();
     }
 
     public void ChooseCardOnScreen(List<Card> listOfCards, string changeInstructions, Action action)
     {
         IEnumerator haveCardsEnabled = KeepCardsOn();
-        AddToStack(Disable);
+        inReaction.Add(Disable);
 
         if (action != null)
         {
-            AddToStack(action);
+            inReaction.Add(action);
             Manager.instance.Instructions(changeInstructions);
         }
 
@@ -724,15 +711,11 @@ public class Player : PhotonCompatible
         SliderChoice slider = Instantiate(CarryVariables.instance.sliderPopup);
         slider.StatsSetup(this, "Choose a number.", min, max, position);
 
-        AddToStack(Boom);
+        inReaction.Add(() => Destroy(slider.gameObject));
         if (action != null)
         {
-            AddToStack(action);
+            inReaction.Add(action);
             Manager.instance.Instructions(changeInstructions);
-        }
-        void Boom()
-        {
-            try{Destroy(slider.gameObject);}catch { }
         }
     }
 
@@ -740,16 +723,21 @@ public class Player : PhotonCompatible
 
     #region Resolve Decision
 
-    public void PopStack()
+    void PopStack()
     {
-        List<Action> toDo = new();
-        toDo.AddRange(inReaction);
-        inReaction.Clear();
-        foreach (Action action in toDo)
-            action();
-
         int number = currentDecisionInStack;
         RememberStep(this, StepType.Revert, () => DecisionComplete(false, number));
+
+        List<Action> newActions = new();
+        for (int i = 0; i < inReaction.Count; i++)
+            newActions.Add(inReaction[i]);
+
+        //Debug.Log($"{newActions.Count} vs {inReaction.Count}");
+        inReaction.Clear();
+        //Debug.Log($"{newActions.Count} vs {inReaction.Count}");
+        foreach (Action action in newActions)
+            action();
+
         Pivot();
     }
 
@@ -758,13 +746,8 @@ public class Player : PhotonCompatible
         if (point >= 0)
         {
             historyStack[point].completed = !undo;
-            Debug.Log($"point {point} ({historyStack[point].actionName}) now {!undo}");
+            Debug.Log($"point {point} now {!undo} - ({historyStack[point].actionName})");
         }
-    }
-
-    public void AddToStack(Action action)
-    {
-        inReaction.Add(action);
     }
 
     public void DecisionMade(int value)
@@ -879,7 +862,7 @@ public class Player : PhotonCompatible
             if (next.stepType == StepType.Share || next.stepType == StepType.Revert)
             {
                 (string instruction, object[] parameters) = next.source.TranslateFunction(next.action);
-                Debug.Log($"undo {next.actionName}");
+                //Debug.Log($"undo {next.actionName}");
 
                 object[] newParameters = new object[parameters.Length];
                 newParameters[0] = true;
@@ -887,7 +870,6 @@ public class Player : PhotonCompatible
                     newParameters[j] = parameters[j];
 
                 next.source.StringParameters(instruction, newParameters);
-                historyStack.RemoveAt(i);
             }
 
             if (next == toThisPoint || i == 0)
@@ -899,6 +881,10 @@ public class Player : PhotonCompatible
                 toThisPoint.completed = false;
                 Pivot();
                 break;
+            }
+            else
+            {
+                historyStack.RemoveAt(i);
             }
         }
     }
@@ -1002,7 +988,7 @@ public class Player : PhotonCompatible
 
     public void AutoNewDecision()
     {
-        historyStack[currentDecisionInStack].ChangeType(StepType.None);
+        try { historyStack[currentDecisionInStack].ChangeType(StepType.None); } catch { }           
     }
 
     public void PreserveTextRPC(string text, int logged)

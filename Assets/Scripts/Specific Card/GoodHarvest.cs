@@ -21,7 +21,7 @@ public class GoodHarvest : EventCard
 
         EndMyTurn ability = null; ability = new(this, true, DrawCards);
         player.NewAbility(ability);
-        player.PopStack();
+        player.Pivot();
 
         void DrawCards(int myLogged, object[] parameters)
         {

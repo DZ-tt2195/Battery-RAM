@@ -83,7 +83,7 @@ public class Log : PhotonCompatible
         {
             if (undoToThis.action != null)
             {
-                Debug.Log($"new undo point in log: {undoToThis.actionName}");
+                //Debug.Log($"new undo point in log: {undoToThis.actionName}");
                 newText.step = undoToThis;
                 undosInLog.Insert(0, newText);
             }

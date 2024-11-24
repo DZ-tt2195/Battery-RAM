@@ -18,7 +18,7 @@ public class Rainfall : EventCard
         int counter = dataFile.miscAmount;
         CanResolveCard ability = null; ability = new(this, true, NoBattery);
         player.NewAbility(ability);
-        player.PopStack();
+        player.Pivot();
 
         bool NoBattery(int myLogged, object[] parameters)
         {

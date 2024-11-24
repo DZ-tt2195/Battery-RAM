@@ -130,12 +130,6 @@ public class Popup : MonoBehaviour
         Resize();
     }
 
-    internal void WaitForChoice()
-    {
-        if (buttonsInCollector.Count == 0)
-            decidingPlayer.PopStack();
-    }
-
     #endregion
 
 }

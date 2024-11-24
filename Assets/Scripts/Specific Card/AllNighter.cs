@@ -23,7 +23,7 @@ public class AllNighter : EventCard
         if (player.TotalBattery() == 0)
         {
             player.AutoNewDecision();
-            player.PopStack();
+            player.Pivot();
         }
         else
         {

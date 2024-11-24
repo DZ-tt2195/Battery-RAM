@@ -19,12 +19,11 @@ public class RobotChef : PlayerCard
 
         if (player.BoolFromAbilities(false, nameof(CanAddBattery), CanAddBattery.CheckParameters(), logged))
         {
-            player.PopStack();
+            player.Pivot();
         }
         else
         {
-            player.RememberStep(this, (withNoBatteries.Count() <= 1) ? StepType.None : StepType.UndoPoint,
-                () => ChooseAddBattery(player, dataFile, 1, logged));
+            player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, 1, logged));
         }
     }
 
@@ -32,8 +31,16 @@ public class RobotChef : PlayerCard
     {
         sideCounter = counter;
         string parathentical = $" ({counter}/{dataFile.batteryAmount})";
-        player.ChooseCardOnScreen(withNoBatteries, $"Add a Battery to a Card with 0 Battery{parathentical}.", Next);
 
+        if (withNoBatteries.Count == 0)
+        {
+            player.AutoNewDecision();
+            player.Pivot();
+        }
+        else
+        {
+            player.ChooseCardOnScreen(withNoBatteries, $"Add a Battery to a Card with 0 Battery{parathentical}.", Next);
+        }
         void Next()
         {
             if (player.chosenCard != null)
@@ -44,18 +51,17 @@ public class RobotChef : PlayerCard
 
                 if (counter == dataFile.batteryAmount)
                 {
-                    player.PopStack();
+                    player.Pivot();
                 }
                 else
                 {
-                    player.RememberStep(this, (withNoBatteries.Count() <= 1) ? StepType.None : StepType.UndoPoint,
-                        () => ChooseAddBattery(player, dataFile, sideCounter+1, logged));
+                    player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter+1, logged));
                 }
             }
             else
             {
                 player.PreserveTextRPC($"{this.name} can't add any more Battery.", logged);
-                player.PopStack();
+                player.Pivot();
             }
         }
     }

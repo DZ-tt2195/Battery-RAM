@@ -1,6 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 
 public class Tournament : EventCard
 {
@@ -23,14 +24,25 @@ public class Tournament : EventCard
             amountRemoved = new int[Manager.instance.playersInOrder.Count];
             Manager.instance.AddStep(HandOutResources, 1);
         }
-        player.RememberStep(this, (player.TotalBattery() == 0) ? StepType.None : StepType.UndoPoint, () => LoseAnotherBattery(player, 0, logged));
+        player.RememberStep(this, StepType.UndoPoint, () => LoseAnotherBattery(player, 0, logged));
+        player.Pivot();
     }
 
     protected void LoseAnotherBattery(Player player, int counter, int logged)
     {
         sideCounter = counter;
-        player.ChooseButton(new() { "Done" }, new(0, -250), "", null);
-        player.ChooseCardOnScreen(player.cardsInPlay.Where(card => card.batteryHere >= 1).OfType<Card>().ToList(), $"Lose a Battery to {this.name}({counter} so far).", Next);
+        List<Card> cardsToChoose = player.cardsInPlay.Where(card => card.batteryHere >= 1).OfType<Card>().ToList();
+        if (cardsToChoose.Count == 0)
+        {
+            player.AutoNewDecision();
+            DoFunction(() => RememberBattery(player.playerPosition, counter));
+            player.Pivot();
+        }
+        else
+        {
+            player.ChooseButton(new() { "Done" }, new(0, -250), "", null);
+            player.ChooseCardOnScreen(cardsToChoose, $"Lose a Battery to {this.name}({counter} so far).", Next);
+        }
 
         void Next()
         {
@@ -44,7 +56,7 @@ public class Tournament : EventCard
             {
                 player.PreserveTextRPC($"{player.name} removed {counter} Battery.", logged);
                 DoFunction(() => RememberBattery(player.playerPosition, counter));
-                player.PopStack();
+                player.Pivot();
             }
         }
     }
@@ -85,5 +97,6 @@ public class Tournament : EventCard
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.ResourceRPC(Resource.Crown, crownChange, 1);
         player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
+        player.Pivot();
     }
 }
