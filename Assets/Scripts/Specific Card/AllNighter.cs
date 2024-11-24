@@ -22,7 +22,7 @@ public class AllNighter : EventCard
     {
         if (player.TotalBattery() == 0)
         {
-            player.ChangeRecentStep(StepType.None);
+            player.AutoNewDecision();
             player.PopStack();
         }
         else

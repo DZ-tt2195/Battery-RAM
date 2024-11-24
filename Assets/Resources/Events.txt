@@ -62,7 +62,7 @@
     [
       "Good Harvest",
       "Each time you play a Card this turn, +1 Card at end of turn.",
-      "TRUE",
+      "FALSE",
       "DrawCard",
       "",
       "",

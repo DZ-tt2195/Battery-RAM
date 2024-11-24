@@ -67,6 +67,7 @@ public class Log : PhotonCompatible
         if (indent < 0)
             return;
 
+        //Debug.Log($"new log: {logText}");
         LogText newText = Instantiate(textBoxClone, RT.transform);
         newText.name = $"Log {RT.transform.childCount}";
         ChangeScrolling();
@@ -82,6 +83,7 @@ public class Log : PhotonCompatible
         {
             if (undoToThis.action != null)
             {
+                Debug.Log($"new undo point in log: {undoToThis.actionName}");
                 newText.step = undoToThis;
                 undosInLog.Insert(0, newText);
             }

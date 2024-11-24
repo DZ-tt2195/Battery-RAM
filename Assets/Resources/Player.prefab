@@ -156,7 +156,8 @@ MonoBehaviour:
   cardsInPlay: []
   hoverEvent: {fileID: 5692404729309754439}
   resourceText: {fileID: 1694358012973467107}
-  currentStep: -1
+  historyStack: []
+  allAbilities: []
 --- !u!1 &1262142806565398546
 GameObject:
   m_ObjectHideFlags: 0

@@ -348,8 +348,9 @@ public class Card : PhotonCompatible
         }
         else
         {
-            player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
+            player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)));
             player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, 1, logged));
+            player.Pivot();
         }
     }
 
@@ -369,8 +370,9 @@ public class Card : PhotonCompatible
             return;
         }
 
-        player.AddToStack(() => FinishedDiscarding(), true);
+        player.AddToStack(() => FinishedDiscarding());
         player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, true, 1, logged));
+        player.Pivot();
 
         void FinishedDiscarding()
         {
@@ -384,7 +386,7 @@ public class Card : PhotonCompatible
         string parathentical = (dataFile.cardAmount == 1) ? "" : $" ({counter}/{dataFile.cardAmount})";
         if (optional)
             player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard Card to {this.name}{parathentical}.", Next);
+        player.ChooseCardOnScreen(player.cardsInHand.OfType<Card>().ToList(), $"Discard to {this.name}{parathentical}.", Next);
 
         void Next()
         {
@@ -430,10 +432,9 @@ public class Card : PhotonCompatible
         }
         else
         {
-            player.AddToStack(() => player.RememberStep(this, StepType.Revert,
-                () => Advance(false, player, dataFile, logged)), true);
-            player.RememberStep(this, (player.cardsInPlay.Count <= 1) ? StepType.None : StepType.UndoPoint,
-                () => ChooseAddBattery(player, dataFile, 1, logged));
+            player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)));
+            player.RememberStep(this, (player.cardsInPlay.Count <= 1) ? StepType.None : StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, 1, logged));
+            player.Pivot();
         }
     }
 
@@ -478,10 +479,10 @@ public class Card : PhotonCompatible
 
     protected void LoseBattery(Player player, CardData dataFile, int logged)
     {
-        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)), true);
-
+        player.AddToStack(() => player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged)));
         player.RememberStep(this, (player.TotalBattery() <= 1) ? StepType.None : StepType.UndoPoint,
             () => ChooseLoseBattery(player, dataFile, false, 1, logged));
+        player.Pivot();
     }
 
     protected void AskLoseBattery(Player player, CardData dataFile, int logged)
@@ -492,8 +493,9 @@ public class Card : PhotonCompatible
             return;
         }
 
-        player.AddToStack(() => FinishedRemoving(), true);
+        player.AddToStack(() => FinishedRemoving());
         player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, true, 1, logged));
+        player.Pivot();
 
         void FinishedRemoving()
         {
@@ -561,6 +563,7 @@ public class Card : PhotonCompatible
         {
             player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
                 $"Pay {dataFile.coinAmount} Coin to {this.name}?", dataFile, logged));
+            player.Pivot();
         }
     }
 
@@ -576,6 +579,7 @@ public class Card : PhotonCompatible
         {
             player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
                 $"Lose {dataFile.crownAmount} Crown for {this.name}?", dataFile, logged));
+            player.Pivot();
         }
     }
 

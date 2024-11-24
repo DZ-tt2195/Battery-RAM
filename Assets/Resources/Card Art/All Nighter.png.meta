@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      AllNighter_0: 137974507423166820
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

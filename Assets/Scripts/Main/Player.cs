@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine.UI;
 using System.Linq;
 using MyBox;
-using System.Reflection;
 using System;
 using System.Linq.Expressions;
 
@@ -16,21 +15,29 @@ public enum StepType { Share, UndoPoint, Revert, None }
 public class NextStep
 {
     public StepType stepType { get; private set; }
+    [TextArea(5,5)] public string actionName { get; private set; }
     public PhotonCompatible source { get; private set; }
     public Expression<Action> action { get; private set; }
+    public bool completed = false;
 
     internal NextStep(PhotonCompatible source, StepType stepType, Expression<Action> action)
     {
         this.source = source;
         this.action = action;
-        ChangeType(stepType, stepType == StepType.UndoPoint);
+        this.actionName = $"{action.ToString().Replace("() => ", "")}";
+        ChangeType(stepType);
     }
 
-    internal void ChangeType(StepType stepType, bool changeUndo)
+    internal void ChangeType(StepType stepType)
     {
+        if (this.stepType == StepType.UndoPoint && stepType != StepType.UndoPoint)
+        {
+            Log.instance.undoToThis = null;
+            Debug.Log("undopoint canceled");
+        }
+
         this.stepType = stepType;
-        if (changeUndo)
-            Log.instance.undoToThis = (stepType == StepType.UndoPoint) ? this : null;
+        completed = stepType != StepType.UndoPoint;
     }
 }
 
@@ -58,14 +65,14 @@ public class Player : PhotonCompatible
     [SerializeField] TMP_Text resourceText;
 
     [Foldout("Undo", true)]
-    [ReadOnly][SerializeField] int currentStep = -1;
-    [ReadOnly] List<NextStep> historyStack = new();
+    [SerializeField] List<NextStep> historyStack = new();
+    int currentDecisionInStack = -1;
 
     [Foldout("Choices", true)]
     public int choice { get; private set; }
     public Card chosenCard { get; private set; }
-    Stack<List<Action>> decisionReact = new();
-    List<TriggeredAbility> allAbilities = new();
+    [SerializeField] List<Action> inReaction = new();
+    [SerializeField] List<TriggeredAbility> allAbilities = new();
 
     #endregion
 
@@ -123,13 +130,14 @@ public class Player : PhotonCompatible
         if (InControl())
         {
             resignButton.onClick.AddListener(() => Manager.instance.DoFunction(() => Manager.instance.DisplayEnding(this.playerPosition)));
-            DoFunction(() => DrawPlayerCards(4, -1), RpcTarget.MasterClient);
+            DoFunction(() => DrawPlayerCards(4, 0), RpcTarget.MasterClient);
 
             int eventsToDraw = (!PhotonNetwork.IsConnected || PhotonNetwork.CurrentRoom.MaxPlayers <= 2) ? 3 : 2;
-            DoFunction(() => DrawEventCards(eventsToDraw, -1), RpcTarget.MasterClient);
+            DoFunction(() => DrawEventCards(eventsToDraw, 0), RpcTarget.MasterClient);
 
             Invoke(nameof(MoveScreen), 0.25f);
             RememberStep(this, StepType.UndoPoint, () => EndTurn());
+            Pivot();
         }
     }
 
@@ -372,7 +380,7 @@ public class Player : PhotonCompatible
         cardsInHand.Remove(card);
         card.transform.SetParent(Manager.instance.playerDeck);
         card.transform.SetAsFirstSibling();
-        card.transform.localPosition = new(0, 10000);
+        StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
     }
 
     public void DiscardPlayerCard(PlayerCard card, int logged)
@@ -480,10 +488,12 @@ public class Player : PhotonCompatible
         PreserveTextRPC("", 0);
         DoFunction(() => ChangeButtonColor(false));
         MoveScreen();
-        DeleteHistory();
+        ResetHistory();
 
         Manager.instance.DoFunction(() => Manager.instance.Instructions($"Waiting on {this.name}..."), RpcTarget.Others);
+        RememberStep(this, StepType.UndoPoint, () => EndTurn());
         RememberStep(this, StepType.UndoPoint, () => ChooseEvent());
+        Pivot();
     }
 
     void ChooseEvent()
@@ -497,7 +507,6 @@ public class Player : PhotonCompatible
 
             Manager.instance.DoFunction(() => Manager.instance.CreateEventPopup(chosenEvent.pv.ViewID), RpcTarget.All);
             RememberStep(this, StepType.Share, () => RevealEvent(false, chosenEvent.pv.ViewID));
-            RememberStep(this, StepType.UndoPoint, () => EndTurn());
         }
     }
 
@@ -510,7 +519,7 @@ public class Player : PhotonCompatible
 
         void Done()
         {
-            ChangeRecentStep(StepType.None);
+            AutoNewDecision();
             DoFunction(() => ChangeButtonColor(true));
             Manager.instance.Instructions("Waiting on other players...");
             Log.instance.undosInLog.Clear();
@@ -527,13 +536,17 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void StartMainTurn()
     {
-        DeleteHistory();
+        ResetHistory();
         DoFunction(() => ChangeButtonColor(false));
         MoveScreen();
 
         PreserveTextRPC($"", 0);
         PreserveTextRPC($"{this.name}'s Turn", 0);
+
+        RememberStep(this, StepType.UndoPoint, () => FinishedMainTurn());
+        RememberStep(this, StepType.UndoPoint, () => ChooseToResolve());
         RememberStep(this, StepType.UndoPoint, () => ChooseAction());
+        Pivot();
     }
 
     void ChooseAction()
@@ -545,7 +558,6 @@ public class Player : PhotonCompatible
             ActionCard action = (ActionCard)chosenCard;
             PreserveTextRPC($"{this.name} chooses to {action.name}.", 0);
             resolvedCards = new();
-            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
             action.ActivateThis(this, 1);
         }
     }
@@ -562,7 +574,7 @@ public class Player : PhotonCompatible
         }
         if (canResolve.Count == 0)
         {
-            ChangeRecentStep(StepType.None);
+            AutoNewDecision();
             FinishedMainTurn();
         }
         else
@@ -586,7 +598,7 @@ public class Player : PhotonCompatible
         else
         {
             resolvedCards.Add(card);
-            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()), true);
+            AddToStack(() => RememberStep(this, StepType.UndoPoint, () => ChooseToResolve()));
 
             PreserveTextRPC($"{this.name} resolves {card.name}.", 0);
             card.BatteryRPC(this, -1, 0);
@@ -600,8 +612,10 @@ public class Player : PhotonCompatible
 
     void FinishedMainTurn()
     {
-        ResolveAbilities(nameof(EndMyTurn), EndMyTurn.CheckParameters(), 0);
+        PreserveTextRPC($"{this.name} ends their turn.", 0);
+        ResolveAbilities(nameof(EndMyTurn), EndMyTurn.CheckParameters(), 1);
         RememberStep(this, StepType.UndoPoint, () => EndTurn());
+        Pivot();
     }
 
     #endregion
@@ -618,9 +632,17 @@ public class Player : PhotonCompatible
         for (int i = 0; i < possibleChoices.Count; i++)
             popup.AddTextButton(possibleChoices[i]);
 
-        AddToStack(() => Destroy(popup.gameObject), action != null);
-        AddToStack(action, false);
-        if (action != null) Manager.instance.Instructions(changeInstructions);
+        AddToStack(Boom);
+        if (action != null)
+        {
+            AddToStack(action);
+            Manager.instance.Instructions(changeInstructions);
+        }
+        void Boom()
+        {
+            try { Destroy(popup.gameObject); } catch { }
+        }
+
         popup.WaitForChoice();
     }
 
@@ -629,13 +651,19 @@ public class Player : PhotonCompatible
         Popup popup = Instantiate(CarryVariables.instance.cardPopup);
         popup.StatsSetup(this, changeInstructions, true, position);
 
-        AddToStack(() => Destroy(popup.gameObject), action != null);
-        AddToStack(action, false);
-        if (action != null) Manager.instance.Instructions(changeInstructions);
-
+        AddToStack(Boom);
+        if (action != null)
+        {
+            AddToStack(action);
+            Manager.instance.Instructions(changeInstructions);
+        }
         for (int i = 0; i < listOfCards.Count; i++)
         {
             popup.AddCardButton(listOfCards[i], 1, true);
+        }
+        void Boom()
+        {
+            try { Destroy(popup.gameObject); } catch { }
         }
         popup.WaitForChoice();
     }
@@ -643,11 +671,13 @@ public class Player : PhotonCompatible
     public void ChooseCardOnScreen(List<Card> listOfCards, string changeInstructions, Action action)
     {
         IEnumerator haveCardsEnabled = KeepCardsOn();
-        AddToStack(Disable, action != null);
-        AddToStack(action, false);
+        AddToStack(Disable);
 
         if (action != null)
+        {
+            AddToStack(action);
             Manager.instance.Instructions(changeInstructions);
+        }
 
         if (listOfCards.Count == 0 && action != null)
             DecisionMade(-1);
@@ -694,62 +724,47 @@ public class Player : PhotonCompatible
         SliderChoice slider = Instantiate(CarryVariables.instance.sliderPopup);
         slider.StatsSetup(this, "Choose a number.", min, max, position);
 
-        AddToStack(() => Destroy(slider.gameObject), true);
-        AddToStack(action, false);
-        if (action != null) Manager.instance.Instructions(changeInstructions);
+        AddToStack(Boom);
+        if (action != null)
+        {
+            AddToStack(action);
+            Manager.instance.Instructions(changeInstructions);
+        }
+        void Boom()
+        {
+            try{Destroy(slider.gameObject);}catch { }
+        }
     }
 
     #endregion
 
     #region Resolve Decision
 
-    public void PopStack(int iteration = 1)
+    public void PopStack()
     {
-        for (int i = 0; i < iteration; i++)
-        {
-            if (decisionReact.Count == 0)
-                break;
+        List<Action> toDo = new();
+        toDo.AddRange(inReaction);
+        inReaction.Clear();
+        foreach (Action action in toDo)
+            action();
 
-            List<Action> toDo = decisionReact.Pop();
-            for (int j = 0; j < toDo.Count; j++)
-            {
-                Action next = toDo[j];
-                RememberStep(this, StepType.Revert, () => ResolveEffects(false, next, j == 0));
-            }
+        int number = currentDecisionInStack;
+        RememberStep(this, StepType.Revert, () => DecisionComplete(false, number));
+        Pivot();
+    }
+
+    void DecisionComplete(bool undo, int point)
+    {
+        if (point >= 0)
+        {
+            historyStack[point].completed = !undo;
+            Debug.Log($"point {point} ({historyStack[point].actionName}) now {!undo}");
         }
     }
 
-    public void AddToStack(Action action, bool newTrigger)
+    public void AddToStack(Action action)
     {
-        RememberStep(this, StepType.Revert, () => DecisionReact(false, action, newTrigger));
-    }
-
-    void DecisionReact(bool undo, Action action, bool newTrigger)
-    {
-        if (undo)
-        {
-            if (decisionReact.Count > 0)
-            {
-                if (newTrigger)
-                    decisionReact.Pop();
-                else
-                    decisionReact.Peek().Remove(action);
-            }
-        }
-        else
-        {
-            if (decisionReact.Count == 0 || newTrigger)
-                decisionReact.Push(new());
-            decisionReact.Peek().Add(action);
-        }
-    }
-
-    void ResolveEffects(bool undo, Action newAction, bool newList)
-    {
-        if (undo)
-            DecisionReact(false, newAction, newList);
-        else
-            newAction?.Invoke();
+        inReaction.Add(action);
     }
 
     public void DecisionMade(int value)
@@ -772,27 +787,30 @@ public class Player : PhotonCompatible
 
 #region Steps
 
-    public List<NextStep> SearchForSteps(string name)
-    {
-        List<NextStep> hasStepName = new();
-        foreach (NextStep step in historyStack)
-        {
-            if (step.action.Body is MethodCallExpression methodCall)
-            {
-                if (methodCall.Method.Name == name)
-                    hasStepName.Add(step);
-            }
-        }
-        return hasStepName;
-    }
-
     public void RememberStep(PhotonCompatible source, StepType type, Expression<Action> action)
     {
         NextStep newStep = new(source, type, action);
         historyStack.Add(newStep);
-        currentStep++;
+
         //Debug.Log($"step {currentStep}: {action}");
-        newStep.action.Compile().Invoke();
+        if (type != StepType.UndoPoint)
+            newStep.action.Compile().Invoke();
+    }
+
+    public void Pivot()
+    {
+        Debug.Log("pivoting");
+        for (int i = historyStack.Count - 1; i >= 0; i--)
+        {
+            NextStep step = historyStack[i];
+            if (step.stepType == StepType.UndoPoint && !step.completed)
+            {
+                currentDecisionInStack = i;
+                Log.instance.undoToThis = step;
+                step.action.Compile().Invoke();
+                return;
+            }
+        }
     }
 
     [PunRPC]
@@ -815,7 +833,7 @@ public class Player : PhotonCompatible
         }
         if (InControl())
         {
-            DoFunction(() => DeleteHistory());
+            DoFunction(() => ResetHistory());
         }
     }
 
@@ -827,9 +845,8 @@ public class Player : PhotonCompatible
     }
 
     [PunRPC]
-    void DeleteHistory()
+    void ResetHistory()
     {
-        currentStep = -1;
         historyStack.Clear();
         Log.instance.undosInLog.Clear();
         Log.instance.DisplayUndoBar(false);
@@ -838,7 +855,7 @@ public class Player : PhotonCompatible
     internal void UndoAmount(NextStep toThisPoint)
     {
         StartCoroutine(CarryVariables.instance.TransitionImage(1f));
-        Debug.Log($"undo to {toThisPoint.action}");
+        inReaction.Clear();
 
         Popup[] allPopups = FindObjectsByType<Popup>(FindObjectsSortMode.None);
         foreach (Popup popup in allPopups)
@@ -855,35 +872,33 @@ public class Player : PhotonCompatible
             card.border.gameObject.SetActive(false);
         }
 
-        while (currentStep >= 0)
+        for (int i = historyStack.Count-1; i>=0; i--)
         {
-            NextStep next = historyStack[currentStep];
+            NextStep next = historyStack[i];
 
             if (next.stepType == StepType.Share || next.stepType == StepType.Revert)
             {
                 (string instruction, object[] parameters) = next.source.TranslateFunction(next.action);
+                Debug.Log($"undo {next.actionName}");
 
                 object[] newParameters = new object[parameters.Length];
                 newParameters[0] = true;
-                for (int i = 1; i < parameters.Length; i++)
-                    newParameters[i] = parameters[i];
+                for (int j = 1; j < parameters.Length; j++)
+                    newParameters[j] = parameters[j];
 
                 next.source.StringParameters(instruction, newParameters);
+                historyStack.RemoveAt(i);
             }
 
-            if (next == toThisPoint || currentStep == 0)
+            if (next == toThisPoint || i == 0)
             {
+                Debug.Log($"continue at {toThisPoint.action}");
                 this.SortHand();
                 this.SortPlay();
-                historyStack.RemoveAt(currentStep);
-                currentStep--;
-                RememberStep(this, StepType.UndoPoint, toThisPoint.action);
+
+                toThisPoint.completed = false;
+                Pivot();
                 break;
-            }
-            else
-            {
-                historyStack.RemoveAt(currentStep);
-                currentStep--;
             }
         }
     }
@@ -980,13 +995,14 @@ public class Player : PhotonCompatible
     [PunRPC]
     public void ChangeButtonColor(bool done)
     {
+        currentDecisionInStack = -1;
         if (myButton != null)
             myButton.image.color = (done) ? Color.yellow : Color.white;
     }
 
-    public void ChangeRecentStep(StepType type)
+    public void AutoNewDecision()
     {
-        historyStack[currentStep].ChangeType(type, true);
+        historyStack[currentDecisionInStack].ChangeType(StepType.None);
     }
 
     public void PreserveTextRPC(string text, int logged)
@@ -1007,6 +1023,20 @@ public class Player : PhotonCompatible
         foreach (PlayerCard card in cardsInPlay)
             answer += card.batteryHere;
         return answer;
+    }
+
+    public List<NextStep> SearchForSteps(string name)
+    {
+        List<NextStep> hasStepName = new();
+        foreach (NextStep step in historyStack)
+        {
+            if (step.action.Body is MethodCallExpression methodCall)
+            {
+                if (methodCall.Method.Name == name)
+                    hasStepName.Add(step);
+            }
+        }
+        return hasStepName;
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[Serializable]
 public class TriggeredAbility
 {
     public PhotonCompatible source { get; protected set; }

@@ -34,7 +34,7 @@ public class EventCard : Card
     {
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.DoFunction(() => player.ChangeButtonColor(false));
-        player.AddToStack(() => player.RememberStep(player, StepType.UndoPoint, () => player.EndTurn()), true);
+        player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
 
         if (dataFile.useSheets)
         {

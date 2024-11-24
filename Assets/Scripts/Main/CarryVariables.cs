@@ -117,12 +117,14 @@ public class CarryVariables : MonoBehaviour
     {
         CanvasGroup newGroup = Instantiate(group);
         blackBackground.gameObject.SetActive(true);
+        blackBackground.SetAlpha(0.85f);
+
         rightClickBackground.gameObject.SetActive(true);
         try { Destroy(rightClickCard.transform.GetChild(0).gameObject); } catch { }
 
         if (text == null)
         {
-            rightClickText.transform.parent.gameObject.SetActive(true);
+            rightClickText.transform.parent.gameObject.SetActive(false);
             rightClickText.text = "";
         }
         else
