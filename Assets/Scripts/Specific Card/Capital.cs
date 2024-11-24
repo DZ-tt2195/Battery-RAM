@@ -19,6 +19,7 @@ public class Capital : EventCard
         EndMyTurn ability = null; ability = new(this, true, LoseMoney);
         player.NewAbility(ability);
         AddCoin(player, dataFile, logged);
+        player.PopStack();
 
         void LoseMoney(int myLogged, object[] parameters)
         {

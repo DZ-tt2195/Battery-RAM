@@ -17,14 +17,8 @@ public class RobotChef : PlayerCard
         CardData dataFile = GetFile();
         withNoBatteries = player.cardsInPlay.Where(card => card.batteryHere == dataFile.miscAmount).OfType<Card>().ToList();
 
-        if (player.BoolFromAbilities(false, nameof(CanAddBattery), CanAddBattery.CheckParameters(), logged))
-        {
-            player.Pivot();
-        }
-        else
-        {
+        if (!player.BoolFromAbilities(false, nameof(CanAddBattery), CanAddBattery.CheckParameters(), logged))
             player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, 1, logged));
-        }
     }
 
     void ChooseAddBattery(Player player, CardData dataFile, int counter, int logged)
@@ -35,7 +29,7 @@ public class RobotChef : PlayerCard
         if (withNoBatteries.Count == 0)
         {
             player.AutoNewDecision();
-            player.Pivot();
+            player.PopStack();
         }
         else
         {
@@ -51,7 +45,7 @@ public class RobotChef : PlayerCard
 
                 if (counter == dataFile.batteryAmount)
                 {
-                    player.Pivot();
+                    player.PopStack();
                 }
                 else
                 {
@@ -61,7 +55,7 @@ public class RobotChef : PlayerCard
             else
             {
                 player.PreserveTextRPC($"{this.name} can't add any more Battery.", logged);
-                player.Pivot();
+                player.PopStack();
             }
         }
     }

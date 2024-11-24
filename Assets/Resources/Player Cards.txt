@@ -186,8 +186,8 @@
       "AskLoseCoin/AddBattery",
       "",
       "3",
-      "3",
       "",
+      "3",
       "0",
       "Osamu Inoue/Dominion: Rising Sun/(Tea House)"
     ],

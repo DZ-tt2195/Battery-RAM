@@ -274,6 +274,7 @@ public class Manager : PhotonCompatible
             else
                 waitingOnPlayers = 1;
 
+            //UnityEngine.Debug.Log($"next action: {actionStack[currentStep].Method.Name}");
             actionStack[currentStep]();
         }
         else

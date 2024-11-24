@@ -28,7 +28,6 @@ public class RobotSibyl : PlayerCard
         {
             EventCard card = (EventCard)player.chosenCard;
             player.RememberStep(player, StepType.Share, () => player.DiscardEvent(false, card.pv.ViewID, logged));
-            player.Pivot();
         }
     }
 }

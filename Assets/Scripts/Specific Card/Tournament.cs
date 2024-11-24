@@ -25,7 +25,7 @@ public class Tournament : EventCard
             Manager.instance.AddStep(HandOutResources, 1);
         }
         player.RememberStep(this, StepType.UndoPoint, () => LoseAnotherBattery(player, 0, logged));
-        player.Pivot();
+        player.PopStack();
     }
 
     protected void LoseAnotherBattery(Player player, int counter, int logged)
@@ -36,7 +36,7 @@ public class Tournament : EventCard
         {
             player.AutoNewDecision();
             DoFunction(() => RememberBattery(player.playerPosition, counter));
-            player.Pivot();
+            player.PopStack();
         }
         else
         {
@@ -56,7 +56,7 @@ public class Tournament : EventCard
             {
                 player.PreserveTextRPC($"{player.name} removed {counter} Battery.", logged);
                 DoFunction(() => RememberBattery(player.playerPosition, counter));
-                player.Pivot();
+                player.PopStack();
             }
         }
     }
@@ -97,6 +97,6 @@ public class Tournament : EventCard
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.ResourceRPC(Resource.Crown, crownChange, 1);
         player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
-        player.Pivot();
+        player.PopStack();
     }
 }

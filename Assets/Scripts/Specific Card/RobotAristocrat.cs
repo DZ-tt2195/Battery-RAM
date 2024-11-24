@@ -17,6 +17,5 @@ public class RobotAristocrat : PlayerCard
     {
         if (cardToPlay != null)
             cardToPlay.BatteryRPC(player, cardToPlay.batteryHere, logged, this.name);
-        player.Pivot();
     }
 }

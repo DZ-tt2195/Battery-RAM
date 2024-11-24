@@ -21,11 +21,11 @@ public class GoodHarvest : EventCard
 
         PlayedCard ability = null; ability = new(this, true, AddCrown);
         player.NewAbility(ability);
-        player.Pivot();
+        player.PopStack();
 
         void AddCrown(int myLogged, object[] parameters)
         {
-            player.ResourceRPC(Resource.Crown, dataFile.crownAmount, logged);
+            player.ResourceRPC(Resource.Crown, dataFile.crownAmount, logged, this.name);
         }
     }
 }

@@ -15,7 +15,9 @@ public class AllNighter : EventCard
     {
         base.ResolveEvent(playerPosition, logged);
         Player player = Manager.instance.playersInOrder[playerPosition];
+
         player.RememberStep(this, StepType.UndoPoint, () => LoseOneBattery(player, logged));
+        player.PopStack();
     }
 
     void LoseOneBattery(Player player, int logged)
@@ -23,7 +25,7 @@ public class AllNighter : EventCard
         if (player.TotalBattery() == 0)
         {
             player.AutoNewDecision();
-            player.Pivot();
+            player.PopStack();
         }
         else
         {

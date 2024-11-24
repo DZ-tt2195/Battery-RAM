@@ -23,7 +23,5 @@ public class BalanceRobot : PlayerCard
 
         for (int i = 0; i<iteration; i++)
             player.ResourceRPC(Resource.Crown, file.crownAmount, logged);
-
-        player.Pivot();
     }
 }

@@ -133,11 +133,13 @@ public class Log : PhotonCompatible
 
     void DebugMessages(string logString, string stackTrace, LogType type)
     {
+        /*
         if (type == LogType.Error)
         {
             AddText($"");
             AddText($"the game crashed :(");
         }
+        */
     }
 
     #endregion

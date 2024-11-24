@@ -165,32 +165,25 @@ public class Card : PhotonCompatible
                 stepCounter++;
                 if (stepCounter < activationSteps.Count)
                     StringParameters(activationSteps[stepCounter], new object[3] { player, dataFile, logged });
-                else
-                    player.Pivot();
             }
         }
-        else if (!undo)
-        {
-            player.Pivot();
-        }
     }
-
+    /*
     protected void CheckBool(bool answer, Player player, CardData dataFile, int logged)
     {
         mayStopEarly = true;
         if (answer)
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
         else if (activationSteps.Count != 0)
-            player.Pivot();
+            player.PopStack();
     }
-
+    */
     protected void ChangeSideCount(bool undo, int change)
     {
         if (undo)
             sideCounter-=change;
         else
             sideCounter+=change;
-        Debug.Log(sideCounter);
     }
 
     protected void SetSideCount(bool undo, int newNumber)
@@ -273,32 +266,38 @@ public class Card : PhotonCompatible
 
     protected void HandOrMore(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.cardsInHand.Count >= dataFile.miscAmount, player, dataFile, logged);
+        if (player.cardsInHand.Count >= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     protected void HandOrLess(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.cardsInHand.Count <= dataFile.miscAmount, player, dataFile, logged);
+        if (player.cardsInHand.Count <= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     protected void MoneyOrMore(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.resourceDictionary[Resource.Coin] >= dataFile.miscAmount, player, dataFile, logged);
+        if (player.resourceDictionary[Resource.Coin] >= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     protected void MoneyOrLess(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.resourceDictionary[Resource.Coin] <= dataFile.miscAmount, player, dataFile, logged);
+        if (player.resourceDictionary[Resource.Coin] <= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     protected void TotalBatteryOrMore(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.TotalBattery() >= dataFile.miscAmount, player, dataFile, logged);
+        if (player.TotalBattery() >= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     protected void TotalBatteryOrLess(Player player, CardData dataFile, int logged)
     {
-        CheckBool(player.TotalBattery() <= dataFile.miscAmount, player, dataFile, logged);
+        if (player.TotalBattery() <= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
     #endregion
@@ -365,7 +364,6 @@ public class Card : PhotonCompatible
         else
         {
             player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, logged));
-            player.Pivot();
         }
     }
 
@@ -381,14 +379,10 @@ public class Card : PhotonCompatible
     {
         mayStopEarly = true;
         if (player.cardsInHand.Count < dataFile.cardAmount)
-        {
-            CheckBool(false, player, dataFile, logged);
             return;
-        }
 
         player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
         player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, true, logged));
-        player.Pivot();
     }
 
     void ChooseDiscard(Player player, CardData dataFile, bool optional, int logged)
@@ -398,11 +392,16 @@ public class Card : PhotonCompatible
         string parathentical = (dataFile.cardAmount == 1) ? "" : $" ({sideCounter}/{dataFile.cardAmount})";
 
         if (optional)
-            player.ChooseButton(new() { "Decline" }, new(0, 250), "", null);
-        else if (cardsToChoose.Count <= 1)
-            player.AutoNewDecision();
-
-        player.ChooseCardOnScreen(cardsToChoose, $"Discard to {this.name}{parathentical}.", Next);
+        {
+            player.ChooseButton(new() { "Decline" }, new(0, 250), $"Discard to {this.name}{parathentical}.", Next);
+            player.ChooseCardOnScreen(cardsToChoose, $"", null);
+        }
+        else 
+        {
+            if (cardsToChoose.Count <= 1)
+                player.AutoNewDecision();
+            player.ChooseCardOnScreen(cardsToChoose, $"Discard to {this.name}{parathentical}.", Next);
+        }
 
         void Next()
         {
@@ -427,9 +426,7 @@ public class Card : PhotonCompatible
                     player.PreserveTextRPC($"{player.name} doesn't discard to {this.name}.", logged);
                 PostDiscarding(player, false, dataFile, logged);
 
-                if (mayStopEarly)
-                    CheckBool(false, player, dataFile, logged);
-                else
+                if (!mayStopEarly)
                     player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
             }
         }
@@ -453,7 +450,6 @@ public class Card : PhotonCompatible
         {
             player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
             player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, logged));
-            player.Pivot();
         }
     }
 
@@ -466,7 +462,7 @@ public class Card : PhotonCompatible
             player.AutoNewDecision();
 
         string parathentical = (dataFile.batteryAmount == 1) ? "" : $" ({sideCounter}/{dataFile.batteryAmount})";
-        player.ChooseCardOnScreen(player.cardsInPlay.OfType<Card>().ToList(), $"Add a Battery{parathentical}.", Next);
+        player.ChooseCardOnScreen(cardsToChoose, $"Add a Battery{parathentical}.", Next);
 
         void Next()
         {
@@ -505,21 +501,16 @@ public class Card : PhotonCompatible
     {
         player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
         player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, false, logged));
-        player.Pivot();
     }
 
     protected void AskLoseBattery(Player player, CardData dataFile, int logged)
     {
         mayStopEarly = true;
         if (player.TotalBattery() < dataFile.batteryAmount)
-        {
-            CheckBool(false, player, dataFile, logged);
             return;
-        }
 
         player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
         player.RememberStep(this, StepType.UndoPoint, () => ChooseLoseBattery(player, dataFile, true, logged));
-        player.Pivot();
     }
 
     protected void ChooseLoseBattery(Player player, CardData dataFile, bool optional, int logged)
@@ -556,9 +547,7 @@ public class Card : PhotonCompatible
                 player.PreserveTextRPC($"{player.name} doesn't remove any Battery.", logged);
                 PostLoseBattery(player, false, dataFile, logged);
 
-                if (mayStopEarly)
-                    CheckBool(false, player, dataFile, logged);
-                else
+                if (!mayStopEarly)
                     player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
             }
         }
@@ -575,27 +564,23 @@ public class Card : PhotonCompatible
     protected void AskLoseCoin(Player player, CardData dataFile, int logged)
     {
         if (player.resourceDictionary[Resource.Coin] < dataFile.coinAmount)
-        {
-            CheckBool(false, player, dataFile, logged);
             return;
-        }
 
-        Action action = () => LoseCoin(player, dataFile, logged);
+        Action action = () => player.ResourceRPC(Resource.Coin, -1*dataFile.coinAmount, logged);
         if (dataFile.coinAmount == 0)
         {
             action();
         }
         else
         {
-            player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
+            player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, action,
                 $"Pay {dataFile.coinAmount} Coin to {this.name}?", dataFile, logged));
-            player.Pivot();
         }
     }
 
     protected void AskLoseCrown(Player player, CardData dataFile, int logged)
     {
-        Action action = () => LoseCrown(player, dataFile, logged);
+        Action action = () => player.ResourceRPC(Resource.Crown, -1 * dataFile.crownAmount, logged);
 
         if (dataFile.crownAmount == 0)
         {
@@ -603,9 +588,8 @@ public class Card : PhotonCompatible
         }
         else
         {
-            player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, () => action(),
+            player.RememberStep(this, StepType.UndoPoint, () => ChoosePay(player, action,
                 $"Lose {dataFile.crownAmount} Crown for {this.name}?", dataFile, logged));
-            player.Pivot();
         }
     }
 
@@ -618,12 +602,11 @@ public class Card : PhotonCompatible
             if (player.choice == 0)
             {
                 ifDone();
-                CheckBool(true, player, dataFile, logged);
+                player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
             }
             else
             {
                 player.PreserveTextRPC($"{player.name} doesn't use {this.name}.", logged);
-                CheckBool(false, player, dataFile, logged);
             }
         }
     }

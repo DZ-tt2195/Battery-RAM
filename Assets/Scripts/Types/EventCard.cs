@@ -40,6 +40,7 @@ public class EventCard : Card
         {
             stepCounter = -1;
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+            player.PopStack();
         }
     }
 }

@@ -25,11 +25,11 @@ public class Masquerade : EventCard
             Manager.instance.AddStep(DiscardCards, 2);
             Manager.instance.AddStep(ReceiveCards, 3);
         }
-        if (Manager.instance.playersInOrder.Count == 1)
-            Log.instance.AddText("There aren't any other players.", 1);
 
         player.DoFunction(() => player.DrawPlayerCards(1, logged), RpcTarget.MasterClient);
-        player.Pivot();
+        player.PopStack();
+        if (Manager.instance.playersInOrder.Count == 1)
+            Log.instance.AddText("There aren't any other players.", 1);
     }
 
     void SelectCards()
@@ -44,6 +44,7 @@ public class Masquerade : EventCard
         Player thisPlayer = Manager.instance.playersInOrder[playerPosition];
         Player prevPlayer = (playerPosition == 0) ? Manager.instance.playersInOrder[^1] : Manager.instance.playersInOrder[playerPosition - 1];
         thisPlayer.RememberStep(this, StepType.UndoPoint, () => PickOtherPlayersCard(thisPlayer, prevPlayer));
+        thisPlayer.PopStack();
     }
 
     void PickOtherPlayersCard(Player thisPlayer, Player prevPlayer)
@@ -84,7 +85,9 @@ public class Masquerade : EventCard
         PlayerCard card = PhotonView.Find(cardID).GetComponent<PlayerCard>();
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.DiscardPlayerCard(card, -1);
+
         player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
+        player.PopStack();
     }
 
     void ReceiveCards()
@@ -101,6 +104,8 @@ public class Masquerade : EventCard
     {
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.SendPlayerCardToAsker(cardID, 1);
+
         player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
+        player.PopStack();
     }
 }

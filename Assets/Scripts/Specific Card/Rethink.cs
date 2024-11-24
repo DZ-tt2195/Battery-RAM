@@ -15,6 +15,7 @@ public class Rethink : EventCard
         base.ResolveEvent(playerPosition, logged);
         Player player = Manager.instance.playersInOrder[playerPosition];
         DiscardCard(player, GetFile(), logged);
+        player.PopStack();
     }
 
     protected override void PostDiscarding(Player player, bool success, CardData dataFile, int logged)
