@@ -24,6 +24,18 @@
       "Marco Promo/Dominion: Empires"
     ],
     [
+      "Rainfall",
+      "Skip the first 2 Robots you resolve this turn (they still lose 1 Battery).",
+      "FALSE",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "2",
+      "Volkan Baga/MTG: Ravnica Allegiance/(Shimmer of Possibility)"
+    ],
+    [
       "Power Outage",
       "You can't add Battery this turn (even when playing a card).",
       "FALSE",
@@ -61,12 +73,12 @@
     ],
     [
       "Good Harvest",
-      "Each time you play a Card this turn, +1 Card at end of turn.",
+      "Each time you play a Card this turn, +1 Crown.",
       "FALSE",
-      "DrawCard",
+      "AddCrown",
       "",
       "",
-      "",
+      "1",
       "",
       "",
       "Sai Beppu/Dominion: Rising Sun"
@@ -108,18 +120,6 @@
       "Elisa Cella/Dominion: Nocturne/(Night Watchman)"
     ],
     [
-      "Rainfall",
-      "Skip the first 2 Robots you resolve this turn (they still lose 1 Battery).",
-      "FALSE",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "2",
-      "Volkan Baga/MTG: Ravnica Allegiance/(Shimmer of Possibility)"
-    ],
-    [
       "Shipments",
       "\"+2 Battery.\"",
       "TRUE",
@@ -130,6 +130,18 @@
       "2",
       "",
       "Marcel-André Casasola Merkle/Dominion: Menagerie/(Sleigh)"
+    ],
+    [
+      "Masquerade",
+      "Draw 1 Card. Then all players (simultaneously) look at and steal 1 Card from the player to their left.",
+      "FALSE",
+      "DrawCard",
+      "1",
+      "",
+      "",
+      "",
+      "",
+      "Franz Vohwinkel/Dominion: Intrigue"
     ]
   ]
 }

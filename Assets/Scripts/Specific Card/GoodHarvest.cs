@@ -19,15 +19,13 @@ public class GoodHarvest : EventCard
         Player player = Manager.instance.playersInOrder[playerPosition];
         CardData dataFile = GetFile();
 
-        EndMyTurn ability = null; ability = new(this, true, DrawCards);
+        PlayedCard ability = null; ability = new(this, true, AddCrown);
         player.NewAbility(ability);
         player.Pivot();
 
-        void DrawCards(int myLogged, object[] parameters)
+        void AddCrown(int myLogged, object[] parameters)
         {
-            List<NextStep> playSteps = player.SearchForSteps("AddToPlay");
-            player.PreserveTextRPC($"{player.name} played {playSteps.Count} Card this turn ({this.name}).", myLogged);
-            player.DrawPlayerCards(playSteps.Count, myLogged+1);
+            player.ResourceRPC(Resource.Crown, dataFile.crownAmount, logged);
         }
     }
 }

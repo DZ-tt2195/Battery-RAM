@@ -313,7 +313,7 @@ public class Player : PhotonCompatible
     }
 
     [PunRPC]
-    void SendPlayerCardToAsker(int PV, int logged)
+    internal void SendPlayerCardToAsker(int PV, int logged)
     {
         RememberStep(this, StepType.Share, () => AddToHand(false, PV, logged));
     }
@@ -414,9 +414,7 @@ public class Player : PhotonCompatible
     public void PlayCard(PlayerCard card, bool pay, int logged)
     {
         if (card == null)
-        {
             return;
-        }
 
         PlayerCardData data = card.GetFile() as PlayerCardData;
 
@@ -428,6 +426,7 @@ public class Player : PhotonCompatible
         }
         RememberStep(this, StepType.Share, () => AddToPlay(false, card.pv.ViewID, logged));
         card.BatteryRPC(this, data.startingBattery, logged);
+        ResolveAbilities(nameof(PlayedCard), PlayedCard.CheckParameters(card), logged);
     }
 
     [PunRPC]

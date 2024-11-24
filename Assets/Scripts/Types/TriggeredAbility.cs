@@ -68,6 +68,24 @@ public class TriggeredAbility
     }
 }
 
+public class PlayedCard : TriggeredAbility
+{
+    public PlayedCard(PhotonCompatible source, bool justThisTurn, Action<int, object[]> ability, Func<string, object[], bool> condition = null) : base(source, ability, justThisTurn, condition)
+    {
+        comparison = nameof(PlayedCard);
+    }
+
+    public static object[] CheckParameters(PlayerCard playedCard)
+    {
+        return new object[1] {playedCard};
+    }
+
+    public static PlayerCard ConvertParameters(object[] parameters)
+    {
+        return (PlayerCard)parameters[0];
+    }
+}
+
 public class EndMyTurn : TriggeredAbility
 {
     public EndMyTurn(PhotonCompatible source, bool justThisTurn, Action<int, object[]> ability, Func<string, object[], bool> condition = null) : base(source, ability, justThisTurn, condition)
