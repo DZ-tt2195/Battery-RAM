@@ -21,7 +21,6 @@ public class BalanceRobot : PlayerCard
             }
         }
 
-        for (int i = 0; i<iteration; i++)
-            player.ResourceRPC(Resource.Crown, file.crownAmount, logged);
+        player.ResourceRPC(Resource.Crown, file.crownAmount * iteration, logged);
     }
 }

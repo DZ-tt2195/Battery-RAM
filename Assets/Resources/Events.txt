@@ -61,13 +61,13 @@
     ],
     [
       "Bartering",
-      "You may discard 2 Card for +4 Battery.",
+      "You may discard 3 Card for +5 Battery.",
       "TRUE",
       "AskDiscard/AddBattery",
-      "2",
+      "3",
       "",
       "",
-      "4",
+      "5",
       "",
       "Franz Vohwinkel/Dominion: Allies/(Swap)"
     ],
@@ -87,7 +87,7 @@
       "Crunch Period",
       "You may pay 1 Coin per Battery you have, to play 1 Card (you still pay its cost)",
       "TRUE",
-      "SetToTotalBattery/AskLoseCoin/PlayCard",
+      "SetToBattery/AskLoseCoin/PlayCard",
       "",
       "",
       "",
@@ -111,7 +111,7 @@
       "All Nighter",
       "Remove 1 Battery from a Robot to do its instructions.",
       "FALSE",
-      "",
+      "LoseBattery",
       "",
       "",
       "",
@@ -121,14 +121,14 @@
     ],
     [
       "Shipments",
-      "\"+2 Battery.\"",
+      "\"+1 Battery per 2 Battery you have (round down).\"",
       "TRUE",
-      "AddBattery",
+      "SetToBattery/AddBattery",
       "",
       "",
       "",
-      "2",
       "",
+      "-2",
       "Marcel-André Casasola Merkle/Dominion: Menagerie/(Sleigh)"
     ],
     [
@@ -142,6 +142,30 @@
       "",
       "",
       "Franz Vohwinkel/Dominion: Intrigue"
+    ],
+    [
+      "Mining",
+      "If you have 4 Coin or less, +4 Coin.",
+      "TRUE",
+      "CoinOrLess/AddCoin",
+      "4",
+      "",
+      "",
+      "",
+      "4",
+      "Martin Hoffmann/Dominion: Rising Sun/(Gold Mine)"
+    ],
+    [
+      "Explosion",
+      "If you have 3 Card or more in play, discard 1 Card from play.",
+      "FALSE",
+      "PlayAreaOrMore",
+      "",
+      "",
+      "",
+      "",
+      "3",
+      "Tomasz Jedruszek/MTG: War of the Spark/(Casualties of War)"
     ]
   ]
 }

@@ -16,11 +16,11 @@ public class Rainfall : EventCard
         Player player = Manager.instance.playersInOrder[playerPosition];
 
         int counter = dataFile.miscAmount;
-        CanResolveCard ability = null; ability = new(this, true, NoBattery);
+        CanResolveCard ability = null; ability = new(this, true, CantResolve);
         player.NewAbility(ability);
         player.PopStack();
 
-        bool NoBattery(int myLogged, object[] parameters)
+        bool CantResolve(int myLogged, object[] parameters)
         {
             counter--;
             PlayerCard card = (PlayerCard)parameters[0];

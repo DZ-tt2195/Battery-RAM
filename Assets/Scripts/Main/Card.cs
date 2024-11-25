@@ -152,6 +152,8 @@ public class Card : PhotonCompatible
 
 #region Ministeps
 
+    #region Misc
+
     protected void Advance(bool undo, Player player, CardData dataFile, int logged)
     {
         if (dataFile.useSheets)
@@ -168,16 +170,7 @@ public class Card : PhotonCompatible
             }
         }
     }
-    /*
-    protected void CheckBool(bool answer, Player player, CardData dataFile, int logged)
-    {
-        mayStopEarly = true;
-        if (answer)
-            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
-        else if (activationSteps.Count != 0)
-            player.PopStack();
-    }
-    */
+
     protected void ChangeSideCount(bool undo, int change)
     {
         if (undo)
@@ -190,6 +183,8 @@ public class Card : PhotonCompatible
     {
         ChangeSideCount(undo, newNumber - sideCounter);
     }
+
+    #endregion
 
     #region +/- Resources
 
@@ -254,7 +249,7 @@ public class Card : PhotonCompatible
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
-    protected void SetToTotalBattery(Player player, CardData dataFile, int logged)
+    protected void SetToBattery(Player player, CardData dataFile, int logged)
     {
         SetAllStats(player.TotalBattery(), dataFile);
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
@@ -276,25 +271,37 @@ public class Card : PhotonCompatible
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
-    protected void MoneyOrMore(Player player, CardData dataFile, int logged)
+    protected void PlayAreaOrMore(Player player, CardData dataFile, int logged)
+    {
+        if (player.cardsInPlay.Count >= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+    }
+
+    protected void PlayAreaOrLess(Player player, CardData dataFile, int logged)
+    {
+        if (player.cardsInPlay.Count <= dataFile.miscAmount)
+            player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
+    }
+
+    protected void CoinOrMore(Player player, CardData dataFile, int logged)
     {
         if (player.resourceDictionary[Resource.Coin] >= dataFile.miscAmount)
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
-    protected void MoneyOrLess(Player player, CardData dataFile, int logged)
+    protected void CoinOrLess(Player player, CardData dataFile, int logged)
     {
         if (player.resourceDictionary[Resource.Coin] <= dataFile.miscAmount)
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
-    protected void TotalBatteryOrMore(Player player, CardData dataFile, int logged)
+    protected void BatteryOrMore(Player player, CardData dataFile, int logged)
     {
         if (player.TotalBattery() >= dataFile.miscAmount)
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
     }
 
-    protected void TotalBatteryOrLess(Player player, CardData dataFile, int logged)
+    protected void BatteryOrLess(Player player, CardData dataFile, int logged)
     {
         if (player.TotalBattery() <= dataFile.miscAmount)
             player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
@@ -566,7 +573,7 @@ public class Card : PhotonCompatible
         if (player.resourceDictionary[Resource.Coin] < dataFile.coinAmount)
             return;
 
-        Action action = () => player.ResourceRPC(Resource.Coin, -1*dataFile.coinAmount, logged);
+        Action action = () => AddCoin(player, dataFile, logged);
         if (dataFile.coinAmount == 0)
         {
             action();
@@ -580,7 +587,7 @@ public class Card : PhotonCompatible
 
     protected void AskLoseCrown(Player player, CardData dataFile, int logged)
     {
-        Action action = () => player.ResourceRPC(Resource.Crown, -1 * dataFile.crownAmount, logged);
+        Action action = () => LoseCrown(player, dataFile, logged);
 
         if (dataFile.crownAmount == 0)
         {

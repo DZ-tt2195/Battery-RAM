@@ -6,7 +6,9 @@ public class Simulator : MonoBehaviour
 {
     [SerializeField] int numCards;
     [SerializeField] int numCoins;
-    [SerializeField] int gameLength;
+    [SerializeField] int defaultCost;
+    [SerializeField] int defaultCrowns;
+    int gameLength = 12;
     int playedCards;
 
     void Start()
@@ -16,27 +18,26 @@ public class Simulator : MonoBehaviour
 
     void RunLoop()
     {
-        //default card: $4, 4 Crowns, no abilities/batteries
         for (int i = 0; i<gameLength; i++)
         {
             if (numCards == 0)
             {
                 numCards += 2;
             }
-            else if (numCoins < 4)
+            else if (numCoins < defaultCost)
             {
                 numCoins += 4;
             }
             else
             {
                 numCards -= 1;
-                numCoins -= 4;
+                numCoins -= defaultCost;
                 playedCards++;
             }
         }
 
         Debug.Log($"Cards played: {playedCards}" +
-            $"\nCrowns: {playedCards * 4}" +
+            $"\nCrowns: {playedCards * defaultCrowns}" +
             $"\nLeftover cards: {numCards}" +
             $"\nLeftover coins: {numCoins}");
     }

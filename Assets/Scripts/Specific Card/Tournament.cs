@@ -50,13 +50,12 @@ public class Tournament : EventCard
             {
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 playerCard.BatteryRPC(player, -1, logged, this.name);
-                player.RememberStep(this, (player.TotalBattery() == 0) ? StepType.None : StepType.UndoPoint, () => LoseAnotherBattery(player, counter+1, logged));
+                player.RememberStep(this, StepType.UndoPoint, () => LoseAnotherBattery(player, counter+1, logged));
             }
             else
             {
                 player.PreserveTextRPC($"{player.name} removed {counter} Battery.", logged);
                 DoFunction(() => RememberBattery(player.playerPosition, counter));
-                player.PopStack();
             }
         }
     }
@@ -96,6 +95,7 @@ public class Tournament : EventCard
     {
         Player player = Manager.instance.playersInOrder[playerPosition];
         player.ResourceRPC(Resource.Crown, crownChange, 1);
+
         player.RememberStep(this, StepType.UndoPoint, () => player.EndTurn());
         player.PopStack();
     }
