@@ -2,6 +2,7 @@
     [
       "cardName",
       "textBox",
+      "value",
       "useSheets",
       "playInstructions",
       "cardAmount",
@@ -14,6 +15,7 @@
     [
       "Capital",
       "\"+4 Coin. At the end of your turn, -8 Coin.\"",
+      "-4",
       "FALSE",
       "AddCoin/LoseCoin",
       "",
@@ -26,6 +28,7 @@
     [
       "Rainfall",
       "Skip the first 2 Robots you resolve this turn (they still lose 1 Battery).",
+      "-4",
       "FALSE",
       "",
       "",
@@ -36,8 +39,35 @@
       "Volkan Baga/MTG: Ravnica Allegiance/(Shimmer of Possibility)"
     ],
     [
+      "Rethink",
+      "Discard 2 Card. Then if you have 0 Card in hand, +1 Card.",
+      "-3",
+      "FALSE",
+      "DrawCard/DiscardCard",
+      "2",
+      "",
+      "",
+      "",
+      "",
+      "Jim Nelson/MTG: Saviors of Kamigawa/(One With Nothing)"
+    ],
+    [
+      "Explosion",
+      "If you have 3 Card or more in play, discard 1 Card from play.",
+      "-3",
+      "FALSE",
+      "PlayAreaOrMore",
+      "",
+      "",
+      "",
+      "",
+      "3",
+      "Tomasz Jedruszek/MTG: War of the Spark/(Casualties of War)"
+    ],
+    [
       "Power Outage",
       "You can't add Battery this turn (even when playing a card).",
+      "-2",
       "FALSE",
       "",
       "",
@@ -50,6 +80,7 @@
     [
       "Tournament",
       "Players remove any amount of Battery (at once). Whoever removed the most gets +1 Crown, the least gets -1 Crown.",
+      "0",
       "FALSE",
       "AskLoseBattery/AddCrown/LoseCrown",
       "",
@@ -60,56 +91,9 @@
       "Michael Watson/Dominion: Cornucopia and Guilds/(Joust)"
     ],
     [
-      "Bartering",
-      "You may discard 3 Card for +5 Battery.",
-      "TRUE",
-      "AskDiscard/AddBattery",
-      "3",
-      "",
-      "",
-      "5",
-      "",
-      "Franz Vohwinkel/Dominion: Allies/(Swap)"
-    ],
-    [
-      "Good Harvest",
-      "Each time you play a Card this turn, +1 Crown.",
-      "FALSE",
-      "AddCrown",
-      "",
-      "",
-      "1",
-      "",
-      "",
-      "Sai Beppu/Dominion: Rising Sun"
-    ],
-    [
-      "Crunch Period",
-      "You may pay 1 Coin per Battery you have, to play 1 Card (you still pay its cost)",
-      "TRUE",
-      "SetToBattery/AskLoseCoin/PlayCard",
-      "",
-      "",
-      "",
-      "",
-      "1",
-      "Claus Stephan/Dominion: Prosperity/(Worker's Village)"
-    ],
-    [
-      "Rethink",
-      "Discard 2 Card. Then if you have 0 Card in hand, +1 Card.",
-      "FALSE",
-      "DrawCard/DiscardCard",
-      "2",
-      "",
-      "",
-      "",
-      "",
-      "Jim Nelson/MTG: Saviors of Kamigawa/(One With Nothing)"
-    ],
-    [
       "All Nighter",
       "Remove 1 Battery from a Robot to do its instructions.",
+      "0",
       "FALSE",
       "LoseBattery",
       "",
@@ -120,8 +104,22 @@
       "Elisa Cella/Dominion: Nocturne/(Night Watchman)"
     ],
     [
+      "Crunch Period",
+      "You may pay 1 Coin per Battery you have, to play 1 Card (you still pay its cost)",
+      "2",
+      "TRUE",
+      "SetToBattery/AskLoseCoin/PlayCard",
+      "",
+      "",
+      "",
+      "",
+      "1",
+      "Claus Stephan/Dominion: Prosperity/(Worker's Village)"
+    ],
+    [
       "Shipments",
       "\"+1 Battery per 2 Battery you have (round down).\"",
+      "2",
       "TRUE",
       "SetToBattery/AddBattery",
       "",
@@ -134,6 +132,7 @@
     [
       "Masquerade",
       "Draw 1 Card. Then all players (simultaneously) look at and steal 1 Card from the player to their left.",
+      "2",
       "FALSE",
       "DrawCard",
       "1",
@@ -146,6 +145,7 @@
     [
       "Mining",
       "If you have 4 Coin or less, +4 Coin.",
+      "2",
       "TRUE",
       "CoinOrLess/AddCoin",
       "4",
@@ -156,16 +156,30 @@
       "Martin Hoffmann/Dominion: Rising Sun/(Gold Mine)"
     ],
     [
-      "Explosion",
-      "If you have 3 Card or more in play, discard 1 Card from play.",
-      "FALSE",
-      "PlayAreaOrMore",
-      "",
-      "",
-      "",
-      "",
+      "Bartering",
+      "You may discard 3 Card for +5 Battery.",
+      "4",
+      "TRUE",
+      "AskDiscard/AddBattery",
       "3",
-      "Tomasz Jedruszek/MTG: War of the Spark/(Casualties of War)"
+      "",
+      "",
+      "5",
+      "",
+      "Franz Vohwinkel/Dominion: Allies/(Swap)"
+    ],
+    [
+      "Good Harvest",
+      "Each time you play a Card this turn, +1 Crown.",
+      "5",
+      "FALSE",
+      "AddCrown",
+      "",
+      "",
+      "1",
+      "",
+      "",
+      "Sai Beppu/Dominion: Rising Sun"
     ]
   ]
 }

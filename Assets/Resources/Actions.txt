@@ -2,6 +2,7 @@
     [
       "cardName",
       "textBox",
+      "value",
       "useSheets",
       "playInstructions",
       "cardAmount",
@@ -14,6 +15,7 @@
     [
       "Research",
       "\"+2 Card.\"",
+      "4",
       "TRUE",
       "DrawCard",
       "2",
@@ -26,6 +28,7 @@
     [
       "Stockpile",
       "\"+4 Coin.\"",
+      "4",
       "TRUE",
       "AddCoin",
       "",
@@ -38,6 +41,7 @@
     [
       "Recharge",
       "\"+2 Battery.\"",
+      "4",
       "TRUE",
       "AddBattery",
       "",
@@ -50,6 +54,7 @@
     [
       "Invent",
       "Play 1 Card.",
+      "4",
       "TRUE",
       "PlayCard",
       "",

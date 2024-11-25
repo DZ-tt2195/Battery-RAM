@@ -524,8 +524,8 @@ RectTransform:
   - {fileID: 491337957}
   - {fileID: 497335780}
   - {fileID: 3878826374594170785}
-  - {fileID: 1717094372}
   - {fileID: 576257097}
+  - {fileID: 1717094372}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1813,6 +1813,8 @@ MonoBehaviour:
   RT: {fileID: 345795901}
   textBoxClone: {fileID: 7738356498783235254, guid: 6d5978b73c3d4470cbd36af5d370f5c0, type: 3}
   undosInLog: []
+  undoToThis:
+    completed: 0
   undoButton: {fileID: 5321558327842842612}
 --- !u!114 &1717094376
 MonoBehaviour:

@@ -52,7 +52,9 @@ public class Explosion : EventCard
         else
         {
             player.cardsInPlay.Remove(card);
-            Log.instance.AddText($"{this.name} discards {card.name} from play.", logged);
+            card.transform.SetParent(Manager.instance.playerDiscard);
+            StartCoroutine(card.MoveCard(new(0, -10000), 0.25f, Vector3.one));
+            Log.instance.AddText($"{player.name} discards {card.name} from play.", logged);
         }
         player.SortPlay();
     }

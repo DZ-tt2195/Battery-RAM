@@ -523,6 +523,7 @@ public class Player : PhotonCompatible
             DoFunction(() => ChangeButtonColor(true));
             makingDecision = false;
             Manager.instance.Instructions("Waiting on other players...");
+            Log.instance.DisplayUndoBar(false);
             Log.instance.undosInLog.Clear();
             Manager.instance.DoFunction(() => Manager.instance.CompletedTurn(), RpcTarget.MasterClient);
         }
