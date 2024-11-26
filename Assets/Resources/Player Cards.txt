@@ -321,7 +321,7 @@
     ],
     [
       "Robot Taxman",
-      "If you have 5 Coin or more, -1 Crown. Either way, +2 Card.",
+      "\"+2 Card. If you have 5 Coin or more, -1 Crown.\"",
       "3",
       "10",
       "3",
@@ -369,7 +369,7 @@
     ],
     [
       "Robot Aristocrat",
-      "Play 1 Card; +2 Battery on it.",
+      "Play 1 Card. If it starts with 3 Battery or more, +2 Battery on it.",
       "8",
       "11",
       "3",
@@ -380,7 +380,7 @@
       "",
       "",
       "2",
-      "",
+      "3",
       "Yusuke Mamada/Dominion: Rising Sun"
     ],
     [

@@ -171,7 +171,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Countdown Robot_0: -110468261490150808
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

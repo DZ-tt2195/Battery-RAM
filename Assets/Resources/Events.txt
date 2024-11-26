@@ -79,10 +79,10 @@
     ],
     [
       "Tournament",
-      "Players remove any amount of Battery (at once). Whoever removed the most gets +1 Crown, the least gets -1 Crown.",
-      "0",
+      "Players remove any amount of Battery (at once). The player(s) who removed the least get -1 Crown.",
+      "-2",
       "FALSE",
-      "AskLoseBattery/AddCrown/LoseCrown",
+      "AskLoseBattery/LoseCrown",
       "",
       "",
       "1",
@@ -91,9 +91,35 @@
       "Michael Watson/Dominion: Cornucopia and Guilds/(Joust)"
     ],
     [
+      "Gold Rush",
+      "The player(s) who gained the most amount of Coin this turn get +1 Crown; the least get -1 Crown.",
+      "0",
+      "FALSE",
+      "LoseCrown/AddCrown",
+      "",
+      "",
+      "1",
+      "",
+      "",
+      "Martin Hoffmann/Dominion: Rising Sun/(Gold Mine)"
+    ],
+    [
+      "Swap Meet",
+      "You may discard 3 Card for +3 Battery.",
+      "0",
+      "TRUE",
+      "AskDiscard/AddBattery",
+      "3",
+      "",
+      "",
+      "3",
+      "",
+      "Franz Vohwinkel/Dominion: Allies/(Swap)"
+    ],
+    [
       "All Nighter",
       "Remove 1 Battery and do that card's instructions.",
-      "0",
+      "1",
       "FALSE",
       "LoseBattery",
       "",
@@ -143,17 +169,17 @@
       "Franz Vohwinkel/Dominion: Intrigue"
     ],
     [
-      "Mining",
-      "If you have 4 Coin or less, +4 Coin.",
+      "Begging",
+      "If you have 5 Coin or less, +3 Coin.",
       "2",
       "TRUE",
       "CoinOrLess/AddCoin",
-      "4",
+      "",
+      "3",
       "",
       "",
-      "",
-      "4",
-      "Martin Hoffmann/Dominion: Rising Sun/(Gold Mine)"
+      "5",
+      "Garret DeChellis/Dominion: Dark Ages/(Beggar)"
     ],
     [
       "Abundance",
@@ -167,19 +193,6 @@
       "",
       "4",
       "Sai Beppu/Dominion: Rising Sun"
-    ],
-    [
-      "Bartering",
-      "You may discard 3 Card for +5 Battery.",
-      "4",
-      "TRUE",
-      "AskDiscard/AddBattery",
-      "3",
-      "",
-      "",
-      "5",
-      "",
-      "Franz Vohwinkel/Dominion: Allies/(Swap)"
     ],
     [
       "Parade",

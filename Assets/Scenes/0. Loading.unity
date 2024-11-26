@@ -1152,22 +1152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b49805f8d0bf47db8cba016e7572ea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  linkedKeywords:
-  - keywordVariations:
-    - Stun
-    - Stunned
-    description: Can't move or attack.
-    color: {r: 1, g: 1, b: 1, a: 0}
-  - keywordVariations:
-    - Multi-Attack
-    description: When this kills a unit, it destroys the whole group.
-    color: {r: 1, g: 1, b: 1, a: 0}
-  - keywordVariations:
-    - Unit
-    - Units
-    description: All units in a group move and attack together, and must be killed
-      one by one.
-    color: {r: 1, g: 1, b: 1, a: 0}
+  linkedKeywords: []
   spriteKeywords:
   - keywordVariations:
     - Card

@@ -159,7 +159,7 @@ public class Player : PhotonCompatible
     {
         int answer = resourceDictionary[Resource.Crown];
         foreach (PlayerCard card in cardsInPlay)
-            answer += (card.GetFile() as PlayerCardData).scoringCrowns;
+            answer += (card.GetFile() as RobotData).scoringCrowns;
         return answer;
     }
 
@@ -355,7 +355,7 @@ public class Player : PhotonCompatible
 
         float midPoint = (start + end) / 2;
         int maxFit = (int)((Mathf.Abs(start) + Mathf.Abs(end)) / gap);
-        cardsInHand = cardsInHand.OrderBy(card => (card.GetFile() as PlayerCardData).coinCost).ToList();
+        cardsInHand = cardsInHand.OrderBy(card => (card.GetFile() as RobotData).coinCost).ToList();
 
         for (int i = 0; i < cardsInHand.Count; i++)
         {
@@ -414,7 +414,7 @@ public class Player : PhotonCompatible
 
     public void PlayCard(PlayerCard card, bool pay, int logged)
     {
-        PlayerCardData data = card.GetFile() as PlayerCardData;
+        RobotData data = card.GetFile() as RobotData;
         if (pay)
         {
             int coinCost = data.coinCost + this.NumberFromAbilities(nameof(ChangeCoinCost), ChangeCoinCost.CheckParameters(card), logged);
@@ -602,9 +602,7 @@ public class Player : PhotonCompatible
             PreserveTextRPC($"{this.name} resolves {card.name}.", 0);
             card.BatteryRPC(this, -1, 0);
 
-            if (BoolFromAbilities(false, nameof(CanResolveCard), CanResolveCard.CheckParameters(card), 1))
-                PopStack();
-            else
+            if (!BoolFromAbilities(false, nameof(CanResolveCard), CanResolveCard.CheckParameters(card), 1))
                 card.ActivateThis(this, 1);
         }
     }

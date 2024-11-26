@@ -43,19 +43,12 @@ public class RobotChef : PlayerCard
                 PlayerCard playerCard = (PlayerCard)player.chosenCard;
                 playerCard.BatteryRPC(player, 1, logged, this.name);
 
-                if (counter == dataFile.batteryAmount)
-                {
-                    player.PopStack();
-                }
-                else
-                {
+                if (counter != dataFile.batteryAmount)
                     player.RememberStep(this, StepType.UndoPoint, () => ChooseAddBattery(player, dataFile, sideCounter+1, logged));
-                }
             }
             else
             {
                 player.PreserveTextRPC($"{this.name} can't add any more Battery.", logged);
-                player.PopStack();
             }
         }
     }

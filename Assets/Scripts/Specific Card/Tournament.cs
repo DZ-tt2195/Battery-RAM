@@ -19,12 +19,17 @@ public class Tournament : EventCard
         base.ResolveEvent(playerPosition, logged);
         Player player = Manager.instance.playersInOrder[playerPosition];
 
-        if (Manager.instance.AmMaster())
+        if (Manager.instance.AmMaster() && Manager.instance.playersInOrder.Count >= 2)
         {
             amountRemoved = new int[Manager.instance.playersInOrder.Count];
             Manager.instance.AddStep(HandOutResources, 1);
         }
-        player.RememberStep(this, StepType.UndoPoint, () => LoseAnotherBattery(player, 0, logged));
+
+        if (Manager.instance.playersInOrder.Count == 1)
+            Log.instance.AddText("There aren't any other players.", 1);
+        else
+            player.RememberStep(this, StepType.UndoPoint, () => LoseAnotherBattery(player, 0, logged));
+
         player.PopStack();
     }
 
@@ -36,7 +41,6 @@ public class Tournament : EventCard
         {
             player.AutoNewDecision();
             DoFunction(() => RememberBattery(player.playerPosition, counter));
-            player.PopStack();
         }
         else
         {
@@ -68,11 +72,9 @@ public class Tournament : EventCard
 
     void HandOutResources()
     {
-        int highest = amountRemoved.Max();
         int lowest = amountRemoved.Min();
 
         Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
-        Log.instance.DoFunction(() => Log.instance.AddText($"Most Battery removed: {highest}", 1));
         Log.instance.DoFunction(() => Log.instance.AddText($"Least Battery removed: {lowest}", 1));
 
         for (int i = 0; i < Manager.instance.playersInOrder.Count; i++)
@@ -83,8 +85,6 @@ public class Tournament : EventCard
 
             if (playerChoice == lowest)
                 amount-=GetFile().crownAmount;
-            if (playerChoice == highest)
-                amount+=GetFile().crownAmount;
 
             DoFunction(() => TournamentResourcesToAll(player.playerPosition, amount), player.realTimePlayer);
         }

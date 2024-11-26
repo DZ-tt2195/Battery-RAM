@@ -9,7 +9,7 @@ public class PlayerCard : Card
 
 #region Setup
 
-    PlayerCardData dataFile;
+    RobotData dataFile;
     TMP_Text cardStats;
     TMP_Text batteryText;
     public int batteryHere { get; private set; }
@@ -24,7 +24,7 @@ public class PlayerCard : Card
 
     internal override void AssignInfo(int fileNumber)
     {
-        dataFile = CarryVariables.instance.playerCardFiles[fileNumber];
+        dataFile = CarryVariables.instance.robotCardFiles[fileNumber];
         background.color = Color.blue;
         GetInstructions(dataFile);
         UpdateBatteryText();

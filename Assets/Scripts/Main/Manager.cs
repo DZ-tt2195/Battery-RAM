@@ -88,7 +88,7 @@ public class Manager : PhotonCompatible
 
         if (PhotonNetwork.IsMasterClient)
         {
-            for (int i = 0; i < CarryVariables.instance.playerCardFiles.Count; i++)
+            for (int i = 0; i < CarryVariables.instance.robotCardFiles.Count; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
@@ -202,7 +202,7 @@ public class Manager : PhotonCompatible
     void AddPlayerCard(int ID, int fileNumber)
     {
         GameObject nextObject = PhotonView.Find(ID).gameObject;
-        PlayerCardData data = CarryVariables.instance.playerCardFiles[fileNumber];
+        RobotData data = CarryVariables.instance.robotCardFiles[fileNumber];
 
         nextObject.name = data.cardName;
         nextObject.transform.SetParent(playerDeck);
@@ -246,7 +246,7 @@ public class Manager : PhotonCompatible
     {
         if (currentStep < actionStack.Count - 1)
         {
-            if (playerDiscard.childCount > 20)
+            if (playerDiscard.childCount > 30)
             {
                 playerDiscard.Shuffle();
                 while (playerDiscard.childCount > 0)

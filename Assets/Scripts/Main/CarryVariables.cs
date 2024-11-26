@@ -28,7 +28,7 @@ public class CardData
 }
 
 [Serializable]
-public class PlayerCardData: CardData
+public class RobotData: CardData
 {
     public int coinCost;
     public int startingBattery;
@@ -52,7 +52,7 @@ public class CarryVariables : MonoBehaviour
 
     [Foldout("Card data", true)]
     public List<CardData> actionFiles { get; private set; }
-    public List<PlayerCardData> playerCardFiles { get; private set; }
+    public List<RobotData> robotCardFiles { get; private set; }
     public List<CardData> eventCardFiles { get; private set; }
 
     string sheetURL = "1ded6BsFZUQjSxAKS9LrqqGTuEx9qk6914dgrfJQwir4";
@@ -138,7 +138,7 @@ public class CarryVariables : MonoBehaviour
         newGroup.transform.localPosition = Vector3.zero;
         if (group.alpha > 0)
             group.alpha = 1;
-        foreach (Transform child in group.transform)
+        foreach (Transform child in newGroup.transform)
             child.gameObject.AddComponent<KeywordLinkHover>();
     }
 
@@ -181,7 +181,7 @@ public class CarryVariables : MonoBehaviour
         while (group.AnyProcessing)
             yield return null;
 
-        playerCardFiles = GetDataFiles<PlayerCardData>(ReadFile("Player Cards"));
+        robotCardFiles = GetDataFiles<RobotData>(ReadFile("Player Cards"));
         actionFiles = GetDataFiles<CardData>(ReadFile("Actions"));
         eventCardFiles = GetDataFiles<CardData>(ReadFile("Events"));
 

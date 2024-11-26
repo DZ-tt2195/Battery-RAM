@@ -100,6 +100,10 @@ public class KeywordTooltip : MonoBehaviour
                 {
                     if (string.IsNullOrEmpty(entry.description))
                     {
+                        tooltipText.transform.parent.gameObject.SetActive(false);
+                    }
+                    else
+                    { 
                         tooltipText.text = entry.description;
                         tooltipText.transform.parent.position = CalculatePosition(mousePosition);
                     }
@@ -112,6 +116,10 @@ public class KeywordTooltip : MonoBehaviour
             if (entry.keywordVariations[0].Equals(target))
             {
                 if (string.IsNullOrEmpty(entry.description))
+                {
+                    tooltipText.transform.parent.gameObject.SetActive(false);
+                }
+                else
                 {
                     tooltipText.text = entry.description;
                     tooltipText.transform.parent.position = CalculatePosition(mousePosition);
