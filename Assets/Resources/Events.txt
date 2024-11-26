@@ -40,7 +40,7 @@
     ],
     [
       "Rethink",
-      "Discard 2 Card. Then if you have 0 Card in hand, +1 Card.",
+      "\"-2 Card. Then if you have 0 Card in hand, +1 Card.",
       "-3",
       "FALSE",
       "DrawCard/DiscardCard",
@@ -92,7 +92,7 @@
     ],
     [
       "All Nighter",
-      "Remove 1 Battery from 1 Card you have in play, to do its instructions.",
+      "Remove 1 Battery and do that card's instructions.",
       "0",
       "FALSE",
       "LoseBattery",

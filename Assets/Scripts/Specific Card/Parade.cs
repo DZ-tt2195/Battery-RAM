@@ -1,16 +1,28 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class Parade : MonoBehaviour
+public class Parade : EventCard
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected override void Awake()
     {
-        
+        base.Awake();
+        this.bottomType = this.GetType();
     }
 
-    // Update is called once per frame
-    void Update()
+    [PunRPC]
+    protected override void ResolveEvent(int playerPosition, int logged)
     {
-        
+        base.ResolveEvent(playerPosition, logged);
+        Player player = Manager.instance.playersInOrder[playerPosition];
+        CardData dataFile = GetFile();
+
+        PlayedCard ability = null; ability = new(this, true, AddCrown);
+        player.NewAbility(ability);
+        player.PopStack();
+
+        void AddCrown(int myLogged, object[] parameters)
+        {
+            player.ResourceRPC(Resource.Crown, dataFile.crownAmount, logged, this.name);
+        }
     }
 }
