@@ -1747,7 +1747,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numCards: 4
-  numCoins: 4
+  numCoins: 8
   defaultCost: 3
   defaultCrowns: 3
 --- !u!1 &1327296366

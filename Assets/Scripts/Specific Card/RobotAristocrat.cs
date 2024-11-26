@@ -16,6 +16,6 @@ public class RobotAristocrat : PlayerCard
     protected override void PostPlaying(Player player, PlayerCard cardToPlay, CardData dataFile, int logged)
     {
         if (cardToPlay != null)
-            cardToPlay.BatteryRPC(player, cardToPlay.batteryHere, logged, this.name);
+            cardToPlay.BatteryRPC(player, dataFile.batteryAmount, logged, this.name);
     }
 }

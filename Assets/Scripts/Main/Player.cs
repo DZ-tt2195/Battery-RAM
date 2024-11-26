@@ -123,7 +123,7 @@ public class Player : PhotonCompatible
 
         resourceDictionary = new()
         {
-            { Resource.Coin, (Application.isEditor && (!PhotonNetwork.IsConnected ||  PhotonNetwork.CurrentRoom.MaxPlayers == 1)) ? 20 : 4 },
+            { Resource.Coin, (Application.isEditor && (!PhotonNetwork.IsConnected ||  PhotonNetwork.CurrentRoom.MaxPlayers == 1)) ? 20 : 8 },
             { Resource.Crown, 0 },
         };
         UpdateResourceText();
@@ -414,11 +414,7 @@ public class Player : PhotonCompatible
 
     public void PlayCard(PlayerCard card, bool pay, int logged)
     {
-        if (card == null)
-            return;
-
         PlayerCardData data = card.GetFile() as PlayerCardData;
-
         if (pay)
         {
             int coinCost = data.coinCost + this.NumberFromAbilities(nameof(ChangeCoinCost), ChangeCoinCost.CheckParameters(card), logged);
@@ -831,15 +827,12 @@ public class Player : PhotonCompatible
                     try
                     {
                         DoFunction(() => StepForOthers(step.source.pv.ViewID, instruction, parameters), RpcTarget.Others);
-                    }
-                    catch { }
+                    } catch { }
                 }
             }
         }
         if (InControl())
-        {
             DoFunction(() => ResetHistory());
-        }
     }
 
     [PunRPC]

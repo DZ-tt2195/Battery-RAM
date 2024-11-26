@@ -22,7 +22,7 @@
       "",
       "",
       "",
-      "0",
+      "",
       "Julien Delval/Dominion: Renaissance"
     ],
     [
@@ -35,7 +35,7 @@
       "4",
       "",
       "",
-      "0",
+      "",
       "Grant Hansen/Dominion: Menagerie"
     ],
     [
@@ -48,7 +48,7 @@
       "",
       "",
       "2",
-      "0",
+      "",
       "Svetlin Velinov/MTG: Guilds of Ravnica/(League Guildmage)"
     ],
     [
@@ -61,7 +61,7 @@
       "",
       "",
       "",
-      "0",
+      "",
       "Ryan Laukat/Dominion: Renaissance/(Innovation)"
     ]
   ]

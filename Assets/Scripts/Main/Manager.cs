@@ -244,27 +244,28 @@ public class Manager : PhotonCompatible
 
     void NextAction()
     {
-        if (turnNumber == 12)
+        if (currentStep < actionStack.Count - 1)
         {
-            DoFunction(() => DisplayEnding(-1));
-        }
-        else if (currentStep < actionStack.Count - 1)
-        {
-            playerDiscard.Shuffle();
-            while (playerDiscard.childCount > 0)
+            if (playerDiscard.childCount > 20)
             {
-                Transform nextChild = playerDiscard.GetChild(0);
-                nextChild.SetParent(playerDeck);
-                nextChild.SetAsLastSibling();
+                playerDiscard.Shuffle();
+                while (playerDiscard.childCount > 0)
+                {
+                    Transform nextChild = playerDiscard.GetChild(0);
+                    nextChild.SetParent(playerDeck);
+                    nextChild.SetAsLastSibling();
+                }
             }
-            eventDiscard.Shuffle();
-            while (eventDiscard.childCount > 0)
+            if (eventDeck.childCount > 5)
             {
-                Transform nextChild = eventDiscard.GetChild(0);
-                nextChild.SetParent(eventDeck);
-                nextChild.SetAsLastSibling();
+                eventDiscard.Shuffle();
+                while (eventDiscard.childCount > 0)
+                {
+                    Transform nextChild = eventDiscard.GetChild(0);
+                    nextChild.SetParent(eventDeck);
+                    nextChild.SetAsLastSibling();
+                }
             }
-
             currentStep++;
 
             if (playersInOrder != null)
@@ -293,6 +294,8 @@ public class Manager : PhotonCompatible
             turnNumber++;
             Log.instance.DoFunction(() => Log.instance.AddText($"", 0));
             Log.instance.DoFunction(() => Log.instance.AddText($"Round {turnNumber} / 12 - {player.name} is in charge", 0));
+            if (turnNumber == 12)
+                Log.instance.DoFunction(() => Log.instance.AddText($"FINAL ROUND", 0));
 
             waitingOnPlayers = 1;
             DoFunction(() => CreateEventPopup(-1));
@@ -306,8 +309,15 @@ public class Manager : PhotonCompatible
 
         void EveryoneTurn()
         {
+            if (turnNumber == 12)
+                AddStep(GameOver);
             foreach (Player player in playersInOrder)
                 player.DoFunction(() => player.StartMainTurn(), player.realTimePlayer);
+        }
+
+        void GameOver()
+        {
+            DoFunction(() => DisplayEnding(-1));
         }
     }
 

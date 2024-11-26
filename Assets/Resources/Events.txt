@@ -22,7 +22,7 @@
       "4",
       "",
       "",
-      "0",
+      "",
       "Marco Promo/Dominion: Empires"
     ],
     [
@@ -53,15 +53,15 @@
     ],
     [
       "Explosion",
-      "If you have 3 Card or more in play, discard 1 Card from play.",
-      "-3",
+      "If you have 4 Card or more in play, discard 1 Card from play.",
+      "-5",
       "FALSE",
       "PlayAreaOrMore",
       "",
       "",
       "",
       "",
-      "3",
+      "4",
       "Tomasz Jedruszek/MTG: War of the Spark/(Casualties of War)"
     ],
     [
@@ -92,7 +92,7 @@
     ],
     [
       "All Nighter",
-      "Remove 1 Battery from a Robot to do its instructions.",
+      "Remove 1 Battery from 1 Card you have in play, to do its instructions.",
       "0",
       "FALSE",
       "LoseBattery",
@@ -156,6 +156,19 @@
       "Martin Hoffmann/Dominion: Rising Sun/(Gold Mine)"
     ],
     [
+      "Abundance",
+      "If you have 4 Card or more in hand, you may play 1 Card.",
+      "2",
+      "TRUE",
+      "HandOrMore/PlayCard",
+      "",
+      "",
+      "",
+      "",
+      "4",
+      "Sai Beppu/Dominion: Rising Sun"
+    ],
+    [
       "Bartering",
       "You may discard 3 Card for +5 Battery.",
       "4",
@@ -169,7 +182,7 @@
       "Franz Vohwinkel/Dominion: Allies/(Swap)"
     ],
     [
-      "Good Harvest",
+      "Parade",
       "Each time you play a Card this turn, +1 Crown.",
       "5",
       "FALSE",
@@ -179,7 +192,7 @@
       "1",
       "",
       "",
-      "Sai Beppu/Dominion: Rising Sun"
+      "Claus Stephan/Dominion: Empires/(Triumphal Arch)"
     ]
   ]
 }
