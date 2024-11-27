@@ -192,7 +192,7 @@
       "",
       "",
       "4",
-      "Sai Beppu/Dominion: Rising Sun"
+      "Sai Beppu/Dominion: Rising Sun/(Good Harvest)"
     ],
     [
       "Parade",

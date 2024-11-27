@@ -205,7 +205,7 @@
       "",
       "",
       "1",
-      "Chris Rahn/MTG: Guilds of Ravnica/(Aurela, Examplar of Justice)"
+      "Chris Rahn/MTG: Guilds of Ravnica/(Aurelia, Examplar of Justice)"
     ],
     [
       "Robot Exorcist",
@@ -381,7 +381,7 @@
       "",
       "2",
       "3",
-      "Yusuke Mamada/Dominion: Rising Sun"
+      "Yusuke Mamada/Dominion: Rising Sun/(Aristocrat)"
     ],
     [
       "Robot Lecturer",
@@ -493,7 +493,7 @@
       "1",
       "",
       "",
-      "Bastien L. Deharme/MTG: Ixalan/(Axis of Mortaility)"
+      "Bastien L. Deharme/MTG: Ixalan/(Axis of Mortality)"
     ]
   ]
 }
