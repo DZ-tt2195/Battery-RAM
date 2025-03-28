@@ -364,14 +364,11 @@ public class Card : PhotonCompatible
 
     protected void DiscardCard(Player player, CardData dataFile, int logged)
     {
+        player.RememberStep(this, StepType.Revert, () => SetSideCount(false, 0));
         if (player.cardsInHand.Count <= dataFile.cardAmount)
-        {
             DiscardAll(player, dataFile, logged);
-        }
         else
-        {
             player.RememberStep(this, StepType.UndoPoint, () => ChooseDiscard(player, dataFile, false, logged));
-        }
     }
 
     void DiscardAll(Player player, CardData dataFile, int logged)
@@ -573,7 +570,7 @@ public class Card : PhotonCompatible
         if (player.resourceDictionary[Resource.Coin] < dataFile.coinAmount)
             return;
 
-        Action action = () => AddCoin(player, dataFile, logged);
+        Action action = () => LoseCoin(player, dataFile, logged);
         if (dataFile.coinAmount == 0)
         {
             action();
