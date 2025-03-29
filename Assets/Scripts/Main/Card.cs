@@ -41,16 +41,16 @@ public class Card : PhotonCompatible
         button = GetComponent<Button>();
         rcm = GetComponent<RightClickMe>();
         cg = this.transform.Find("Canvas Group").GetComponent<CanvasGroup>();
-        this.transform.localScale = Vector3.Lerp(Vector3.one, Manager.instance.canvas.transform.localScale, 0.5f);
+
+        Canvas canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+        this.transform.localScale = Vector3.Lerp(Vector3.one, canvas.transform.localScale, 0.5f);
 
         background = cg.transform.Find("Background").GetComponent<Image>();
         cardDescription = cg.transform.Find("Card Description").GetComponent<TMP_Text>();
         try
         {
             cardName = cg.transform.Find("Card Name").GetComponent<TMP_Text>();
-            cardName.text = this.name;
             artBox = cg.transform.Find("Art Box").GetComponent<Image>();
-            artBox.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
         }
         catch { }
     }
@@ -61,7 +61,11 @@ public class Card : PhotonCompatible
 
     protected void GetInstructions(CardData dataFile)
     {
+        this.name = dataFile.cardName;
+        cardName.text = this.name;
+        artBox.sprite = Resources.Load<Sprite>($"Card Art/{this.name}");
         rcm.AssignInfo(cg, dataFile.artCredit);
+
         if (dataFile.useSheets)
         {
             activationSteps = SpliceString(dataFile.playInstructions);
@@ -224,11 +228,21 @@ public class Card : PhotonCompatible
 
     protected void SetAllStats(int number, CardData dataFile)
     {
-        float multiplier = (dataFile.miscAmount > 0) ? dataFile.miscAmount : -1f / dataFile.miscAmount;
-        dataFile.cardAmount = (int)Mathf.Floor(number * multiplier);
-        dataFile.coinAmount = (int)Mathf.Floor(number * multiplier);
-        dataFile.crownAmount = (int)Mathf.Floor(number * multiplier);
-        dataFile.batteryAmount = (int)Mathf.Floor(number * multiplier);
+        if (dataFile.miscAmount == 0)
+        {
+            dataFile.cardAmount = 0;
+            dataFile.coinAmount = 0;
+            dataFile.crownAmount = 0;
+            dataFile.batteryAmount = 0;
+        }
+        else
+        {
+            float multiplier = (dataFile.miscAmount > 0) ? dataFile.miscAmount : -1f / dataFile.miscAmount;
+            dataFile.cardAmount = (int)Mathf.Floor(number * multiplier);
+            dataFile.coinAmount = (int)Mathf.Floor(number * multiplier);
+            dataFile.crownAmount = (int)Mathf.Floor(number * multiplier);
+            dataFile.batteryAmount = (int)Mathf.Floor(number * multiplier);
+        }
     }
 
     protected void SetToHand(Player player, CardData dataFile, int logged)
@@ -373,7 +387,8 @@ public class Card : PhotonCompatible
 
     void DiscardAll(Player player, CardData dataFile, int logged)
     {
-        for (int i = 0; i<player.cardsInHand.Count; i++)
+        int toDiscard = player.cardsInHand.Count;
+        for (int i = 0; i<toDiscard; i++)
             player.DiscardPlayerCard(player.cardsInHand[0], logged);
         PostDiscarding(player, true, dataFile, logged);
         player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
@@ -604,14 +619,9 @@ public class Card : PhotonCompatible
         void Next()
         {
             if (player.choice == 0)
-            {
                 ifDone();
-                player.RememberStep(this, StepType.Revert, () => Advance(false, player, dataFile, logged));
-            }
             else
-            {
                 player.PreserveTextRPC($"{player.name} doesn't use {this.name}.", logged);
-            }
         }
     }
 

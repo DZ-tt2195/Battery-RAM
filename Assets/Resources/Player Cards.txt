@@ -294,14 +294,14 @@
       "10",
       "2",
       "4",
-      "FALSE",
-      "AddCoin",
+      "TRUE",
+      "SetToBatteryHere/AddCoin",
       "",
       "",
       "",
       "",
       "1",
-      "Harald Lieske/Dominion: Plunder/(Magnate)"
+      "Harald Lieske/Dominion: Prosperity/(Magnate)"
     ],
     [
       "Robot Taskmaster",
